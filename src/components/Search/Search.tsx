@@ -10,6 +10,14 @@ class Search extends Component<Props> {
     value: this.props.defaultValue,
   };
 
+  componentDidUpdate(prevProps: Props) {
+    if (prevProps.defaultValue !== this.props.defaultValue) {
+      this.setState({
+        value: this.props.defaultValue,
+      });
+    }
+  }
+
   handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ value: e.target.value });
   };
@@ -20,9 +28,14 @@ class Search extends Component<Props> {
 
   render() {
     return (
-      <div className='search'>
-        <input value={this.state.value} onChange={this.handleChange} />
-        <button onClick={this.handleSubmit}>Search</button>
+      <div className="search">
+        <input
+          value={this.state.value}
+          onChange={this.handleChange}
+        />
+        <button onClick={this.handleSubmit}>
+          Search
+        </button>
       </div>
     );
   }
