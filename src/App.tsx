@@ -148,7 +148,7 @@ class App extends Component<object, State> {
           </button>
 
           <div className="pages">
-            {Array.from({ length: 10 }, (_, i) => (
+            {Array.from({ length: this.state.items.length }, (_, i) => (
               <button
                 key={i + 1}
                 className={
