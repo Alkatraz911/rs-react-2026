@@ -87,9 +87,9 @@ export const fetchPokemons = async (
 
 export const searchPokemons = async (
   query: string
-): Promise<PokemonCardData[]> => {
+): Promise<PokemonPageData> => {
   const res = await fetch(
-    'https://pokeapi.co/api/v2/pokemon?limit=100'
+    'https://pokeapi.co/api/v2/pokemon?limit=1000'
   );
 
   if (!res.ok) {
@@ -110,7 +110,7 @@ export const searchPokemons = async (
       const detailsRes = await fetch(pokemon.url);
 
       if (!detailsRes.ok) {
-        throw new Error('Failed to fetch details');
+        throw new Error('Failed details');
       }
 
       const details: PokemonDetailsResponse =
@@ -128,6 +128,9 @@ export const searchPokemons = async (
     })
   );
 
-  return detailedPokemons;
+  return {
+    items: detailedPokemons,
+    next: null,
+    previous: null,
+  };
 };
-

@@ -43,18 +43,21 @@ class App extends Component<object, State> {
   }
 
   loadData = async () => {
-    this.setState({ loading: true, error: null });
+    this.setState({
+      loading: true,
+      error: null,
+    });
 
     try {
       const { query, offset } = this.state;
 
       if (query) {
-        const items = await searchPokemons(query);
+        const data = await searchPokemons(query);
 
         this.setState({
-          items,
+          items: data.items,
           next: null,
-          previous: null,
+          prev: null,
         });
       } else {
         const data = await fetchPokemons(offset);
@@ -75,6 +78,7 @@ class App extends Component<object, State> {
       });
     }
   };
+
   handleSearch = (value: string) => {
     const trimmed = value.trim();
 
@@ -86,6 +90,9 @@ class App extends Component<object, State> {
       {
         query: trimmed,
         offset: 0,
+        currentPage: 1,
+        next: null,
+        prev: null,
       },
       this.loadData
     );
