@@ -2,7 +2,7 @@ import { Component } from 'react';
 
 class ErrorMessage extends Component<{ message: string }> {
     render() {
-        return <div>{this.props.message}</div>;
+        return <div data-testid="error-message">{this.props.message}</div>;
     }
 }
 
