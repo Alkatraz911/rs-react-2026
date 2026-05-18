@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import CardList from './CardList';
 import type { PokemonCardData } from '../../services/api';
 import { renderWithRouter } from '../../helpers/test.utils';
