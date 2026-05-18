@@ -1,16 +1,28 @@
-import { vi } from 'vitest';
-import { fetchPokemons, searchPokemons } from './api';
+import {
+  describe,
+  test,
+  expect,
+  beforeEach,
+  vi,
+} from 'vitest';
+
+import {
+  fetchPokemons,
+  searchPokemons,
+} from './api';
 
 describe('API Service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-
   const mockFetchResponses = (
     responses: Response[]
   ) => {
-    const fetchSpy = vi.spyOn(global, 'fetch');
+    const fetchSpy = vi.spyOn(
+      globalThis,
+      'fetch'
+    );
 
     responses.forEach((response) => {
       fetchSpy.mockResolvedValueOnce(response);
@@ -26,27 +38,40 @@ describe('API Service', () => {
           ok: true,
           json: async () => ({
             results: [
-              { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' },
+              {
+                name: 'pikachu',
+                url: 'https://pokeapi.co/api/v2/pokemon/25/',
+              },
             ],
             next: 'next-page',
             previous: null,
           }),
-        },
+        } as Response,
+
         {
           ok: true,
           json: async () => ({
             id: 25,
             name: 'pikachu',
             height: 4,
-            sprites: { front_default: 'pikachu.png' },
-            types: [{ type: { name: 'electric' } }],
+            sprites: {
+              front_default: 'pikachu.png',
+            },
+            types: [
+              {
+                type: {
+                  name: 'electric',
+                },
+              },
+            ],
           }),
-        },
+        } as Response,
       ]);
 
       const result = await fetchPokemons();
 
       expect(result.items).toHaveLength(1);
+
       expect(result.items[0]).toEqual({
         id: 25,
         name: 'pikachu',
@@ -54,16 +79,22 @@ describe('API Service', () => {
         height: 4,
         types: ['electric'],
       });
+
       expect(result.next).toBe('next-page');
       expect(result.previous).toBeNull();
     });
 
     test('throws error when main list request fails', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-        ok: false,
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          ok: false,
+        } as Response);
 
-      await expect(fetchPokemons()).rejects.toThrow('Failed to fetch pokemons');
+      await expect(
+        fetchPokemons()
+      ).rejects.toThrow(
+        'Failed to fetch pokemons'
+      );
     });
 
     test('throws error when pokemon details request fails', async () => {
@@ -71,17 +102,27 @@ describe('API Service', () => {
         {
           ok: true,
           json: async () => ({
-            results: [{ name: 'pikachu', url: 'https://...' }],
+            results: [
+              {
+                name: 'pikachu',
+                url: 'https://...',
+              },
+            ],
             next: null,
             previous: null,
           }),
-        },
+        } as Response,
+
         {
           ok: false,
         } as Response,
       ]);
 
-      await expect(fetchPokemons()).rejects.toThrow('Failed details');
+      await expect(
+        fetchPokemons()
+      ).rejects.toThrow(
+        'Failed details'
+      );
     });
   });
 
@@ -92,27 +133,46 @@ describe('API Service', () => {
           ok: true,
           json: async () => ({
             results: [
-              { name: 'pikachu', url: 'https://...' },
-              { name: 'bulbasaur', url: 'https://...' },
+              {
+                name: 'pikachu',
+                url: 'https://...',
+              },
+              {
+                name: 'bulbasaur',
+                url: 'https://...',
+              },
             ],
           }),
-        },
+        } as Response,
+
         {
           ok: true,
           json: async () => ({
             id: 25,
             name: 'pikachu',
             height: 4,
-            sprites: { front_default: 'pikachu.png' },
-            types: [{ type: { name: 'electric' } }],
+            sprites: {
+              front_default: 'pikachu.png',
+            },
+            types: [
+              {
+                type: {
+                  name: 'electric',
+                },
+              },
+            ],
           }),
-        },
+        } as Response,
       ]);
 
-      const result = await searchPokemons('pika');
+      const result =
+        await searchPokemons('pika');
 
       expect(result.items).toHaveLength(1);
-      expect(result.items[0].name).toBe('pikachu');
+
+      expect(result.items[0].name).toBe(
+        'pikachu'
+      );
     });
 
     test('is case insensitive', async () => {
@@ -120,22 +180,32 @@ describe('API Service', () => {
         {
           ok: true,
           json: async () => ({
-            results: [{ name: 'Pikachu', url: 'https://...' }],
+            results: [
+              {
+                name: 'Pikachu',
+                url: 'https://...',
+              },
+            ],
           }),
-        },
+        } as Response,
+
         {
           ok: true,
           json: async () => ({
             id: 25,
             name: 'Pikachu',
             height: 4,
-            sprites: { front_default: 'pikachu.png' },
+            sprites: {
+              front_default: 'pikachu.png',
+            },
             types: [],
           }),
-        },
+        } as Response,
       ]);
 
-      const result = await searchPokemons('PIKA');
+      const result =
+        await searchPokemons('PIKA');
+
       expect(result.items).toHaveLength(1);
     });
 
@@ -144,21 +214,31 @@ describe('API Service', () => {
         {
           ok: true,
           json: async () => ({
-            results: [{ name: 'bulbasaur', url: 'https://...' }],
+            results: [
+              {
+                name: 'bulbasaur',
+                url: 'https://...',
+              },
+            ],
           }),
-        },
+        } as Response,
       ]);
 
-      const result = await searchPokemons('pikachu');
+      const result =
+        await searchPokemons('pikachu');
+
       expect(result.items).toEqual([]);
     });
 
     test('throws error when search request fails', async () => {
-      vi.spyOn(global, 'fetch').mockResolvedValueOnce({
-        ok: false,
-      } as Response);
+      vi.spyOn(globalThis, 'fetch')
+        .mockResolvedValueOnce({
+          ok: false,
+        } as Response);
 
-      await expect(searchPokemons('pikachu')).rejects.toThrow('Search failed');
+      await expect(
+        searchPokemons('pikachu')
+      ).rejects.toThrow('Search failed');
     });
 
     test('throws error when details request fails', async () => {
@@ -166,13 +246,25 @@ describe('API Service', () => {
         {
           ok: true,
           json: async () => ({
-            results: [{ name: 'pikachu', url: 'https://...' }],
+            results: [
+              {
+                name: 'pikachu',
+                url: 'https://...',
+              },
+            ],
           }),
-        },
-        { ok: false } as Response,
+        } as Response,
+
+        {
+          ok: false,
+        } as Response,
       ]);
 
-      await expect(searchPokemons('pikachu')).rejects.toThrow('Failed details');
+      await expect(
+        searchPokemons('pikachu')
+      ).rejects.toThrow(
+        'Failed details'
+      );
     });
   });
 });

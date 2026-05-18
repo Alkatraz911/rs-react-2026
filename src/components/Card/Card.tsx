@@ -29,7 +29,7 @@ function Card({ item }: Props) {
       }}
     >
       <img
-        src={item.image}
+        src={item.image ?? undefined}
         alt={item.name}
       />
 

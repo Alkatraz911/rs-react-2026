@@ -69,7 +69,7 @@ function PokemonDetails() {
       </button>
 
       <img
-        src={pokemon.image}
+        src={pokemon.image ?? undefined}
         alt={pokemon.name}
         className="details-image"
       />

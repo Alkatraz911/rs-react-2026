@@ -3,7 +3,7 @@ import { vi } from 'vitest';
 
 import { usePokemonDetails } from './usePokemonDetails';
 import * as api from '../services/api';
-
+import type { PokemonCardData } from '../services/api';
 vi.mock('../services/api');
 
 const pokemonMock: PokemonCardData = {
