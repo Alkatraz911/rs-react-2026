@@ -23,5 +23,9 @@ export default defineConfig([
     languageOptions: {
       globals: globals.browser,
     },
+    ignores: [
+      '**/*.test.ts',
+      '**/*.test.tsx',
+    ],
   },
 ]);
