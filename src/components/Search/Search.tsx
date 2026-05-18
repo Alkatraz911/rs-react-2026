@@ -1,7 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
+import { useState } from 'react';
 
 import { useSearchParams } from 'react-router-dom';
 
@@ -21,11 +18,7 @@ function Search() {
     );
 
   const [value, setValue] =
-    useState(savedSearch);
-
-  useEffect(() => {
-    setValue(query);
-  }, [query]);
+    useState(() => savedSearch);
 
   const handleSubmit = () => {
     const trimmed = value.trim();
@@ -48,9 +41,10 @@ function Search() {
   };
 
   const handleClearSearch = () => {
-    setSearchParams('');
+    setValue('');
     setSavedSearch('');
-  }
+    setSearchParams('');
+  };
 
   return (
     <div className="search">
@@ -66,9 +60,14 @@ function Search() {
         }}
         placeholder="Search pokemon..."
       />
-      <button className="clear-search" onClick={handleClearSearch}>
+
+      <button
+        className="clear-search"
+        onClick={handleClearSearch}
+      >
         X
       </button>
+
       <button onClick={handleSubmit}>
         Search
       </button>
@@ -77,4 +76,3 @@ function Search() {
 }
 
 export default Search;
-
