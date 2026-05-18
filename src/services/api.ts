@@ -6,7 +6,7 @@ export interface PokemonListItem {
 export interface PokemonCardData {
   id: number;
   name: string;
-  image: string;
+  image: string | null;
   height: number;
   types: string[];
 }
