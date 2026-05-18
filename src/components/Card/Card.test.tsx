@@ -8,9 +8,11 @@ import type { PokemonCardData } from '../../services/api';
 
 const navigateMock = vi.fn();
 
-// mock react-router-dom
+
 vi.mock('react-router-dom', async () => {
-  const actual = await vi.importActual<any>('react-router-dom');
+  const actual = await vi.importActual<
+    typeof import('react-router-dom')
+  >('react-router-dom');
 
   return {
     ...actual,
@@ -96,5 +98,5 @@ describe('Card component', () => {
     expect(card).toBeInTheDocument();
   });
 
-  
+
 });

@@ -7,11 +7,15 @@ describe('API Service', () => {
   });
 
 
-  const mockFetchResponses = (responses: any[]) => {
+  const mockFetchResponses = (
+    responses: Response[]
+  ) => {
     const fetchSpy = vi.spyOn(global, 'fetch');
+
     responses.forEach((response) => {
-      fetchSpy.mockResolvedValueOnce(response as Response);
+      fetchSpy.mockResolvedValueOnce(response);
     });
+
     return fetchSpy;
   };
 

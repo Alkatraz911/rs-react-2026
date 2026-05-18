@@ -23,7 +23,6 @@ describe('CardList component', () => {
 
   test('renders all pokemon cards', () => {
     renderWithRouter(<CardList items={mockItems} />);
-
     expect(screen.getByText('Pikachu')).toBeInTheDocument();
     expect(screen.getByText('Charizard')).toBeInTheDocument();
   });
@@ -35,15 +34,11 @@ describe('CardList component', () => {
 
   test('renders pokemon images with correct alt text', () => {
     renderWithRouter(<CardList items={mockItems} />);
-
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(2);
-
-    // Правильные способы проверки alt
-    expect(images[0]).toHaveAttribute('alt', 'Pikachu');           // точное совпадение
+    expect(images[0]).toHaveAttribute('alt', 'Pikachu');          
     expect(images[1]).toHaveAttribute('alt', 'Charizard');
 
-    // Или более гибко:
     expect(screen.getByAltText('Pikachu')).toBeInTheDocument();
     expect(screen.getByAltText('Charizard')).toBeInTheDocument();
   });

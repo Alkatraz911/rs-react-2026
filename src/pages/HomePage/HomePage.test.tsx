@@ -35,9 +35,7 @@ describe('HomePage', () => {
             error: null,
             totalPages: 1,
         });
-
         renderWithRouter(<HomePage />);
-
         expect(screen.getByTestId('loader')).toBeInTheDocument();
     });
 
@@ -48,9 +46,7 @@ describe('HomePage', () => {
             error: 'Failed to load',
             totalPages: 1,
         });
-
         renderWithRouter(<HomePage />);
-
         expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
     });
 
@@ -69,9 +65,7 @@ describe('HomePage', () => {
             error: null,
             totalPages: 1,
         });
-
         renderWithRouter(<HomePage />);
-
         expect(screen.getByText('pikachu')).toBeInTheDocument();
     });
 
@@ -90,9 +84,7 @@ describe('HomePage', () => {
             error: null,
             totalPages: 5,
         });
-
         renderWithRouter(<HomePage />);
-
         expect(screen.getByText('1')).toBeInTheDocument();
     });
 
@@ -135,9 +127,7 @@ describe('HomePage', () => {
             error: null,
             totalPages: 1,
         });
-
         const { container } = renderWithRouter(<HomePage />, '/');
-
         expect(container.querySelector('.app-layout')).toBeInTheDocument();
     });
 
@@ -148,15 +138,12 @@ describe('HomePage', () => {
             error: null,
             totalPages: 1,
         });
-
         renderWithRouter(<HomePage />);
-
         expect(screen.getByRole('textbox')).toBeInTheDocument();
     });
 
     test('renders right panel when details route active', () => {
         renderWithRouter(<HomePage />, '/pokemon/1');
-
         expect(document.querySelector('.right-panel')).toBeInTheDocument();
     });
 });
