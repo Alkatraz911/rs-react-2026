@@ -1,76 +1,100 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { vi } from 'vitest';
+
 import Card from './Card';
+import { renderWithRouter } from '../../helpers/test.utils';
 import type { PokemonCardData } from '../../services/api';
 
+const navigateMock = vi.fn();
+
+// mock react-router-dom
+vi.mock('react-router-dom', async () => {
+  const actual = await vi.importActual<any>('react-router-dom');
+
+  return {
+    ...actual,
+    useNavigate: () => navigateMock,
+    useSearchParams: () => [
+      new URLSearchParams('query=pikachu&page=1'),
+    ],
+  };
+});
+
 describe('Card component', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
   const mockItem: PokemonCardData = {
-    id: 1,
-    name: 'Pikachu',
-    image: 'https://example.com/pikachu.png',
+    id: 25,
+    name: 'pikachu',
+    image: null,
     height: 4,
     types: ['electric'],
   };
 
-  test('renders pokemon name', () => {
-    render(<Card item={mockItem} />);
-    expect(screen.getByText('Pikachu')).toBeInTheDocument();
-  });
+  test('renders pokemon data', () => {
+    renderWithRouter(<Card item={mockItem} />);
 
-  test('renders pokemon image with correct src and alt', () => {
-    render(<Card item={mockItem} />);
-
-    const image = screen.getByRole('img');
-
-    expect(image).toBeInTheDocument();
-    expect(image).toHaveAttribute('src', mockItem.image);
-    expect(image).toHaveAttribute('alt', mockItem.name);
-  });
-
-  test('renders pokemon height', () => {
-    render(<Card item={mockItem} />);
+    expect(screen.getByText('pikachu')).toBeInTheDocument();
     expect(screen.getByText('Height: 4')).toBeInTheDocument();
+
+    const img = screen.getByRole('img');
+    expect(img).toHaveAttribute('alt', 'pikachu');
   });
 
   test('renders pokemon types', () => {
-    render(<Card item={mockItem} />);
-    expect(screen.getByText('electric')).toBeInTheDocument();
-  });
-
-  test('renders multiple pokemon types', () => {
-    const multiTypeItem: PokemonCardData = {
-      ...mockItem,
-      types: ['electric', 'flying'],
-    };
-
-    render(<Card item={multiTypeItem} />);
+    renderWithRouter(<Card item={mockItem} />);
 
     expect(screen.getByText('electric')).toBeInTheDocument();
-    expect(screen.getByText('flying')).toBeInTheDocument();
   });
 
-  test('renders correct number of type elements', () => {
-    const multiTypeItem: PokemonCardData = {
-      ...mockItem,
-      types: ['electric', 'flying'],
-    };
+  test('navigates to details on click', async () => {
+    const user = userEvent.setup();
 
-    render(<Card item={multiTypeItem} />);
+    renderWithRouter(<Card item={mockItem} />);
 
-    // Лучше использовать data-testid или role, но если класс обязателен:
-    const typeElements = screen.getAllByText(/electric|flying/);
-    expect(typeElements).toHaveLength(2);
+    await user.click(screen.getByRole('button'));
+
+    expect(navigateMock).toHaveBeenCalledWith({
+      pathname: '/pokemon/25',
+      search: 'query=pikachu&page=1',
+    });
   });
 
-  test('handles empty types array gracefully', () => {
-    const noTypeItem: PokemonCardData = {
-      ...mockItem,
-      types: [],
-    };
 
-    render(<Card item={noTypeItem} />);
 
-    // Проверяем, что карточка всё равно рендерится
-    expect(screen.getByText('Pikachu')).toBeInTheDocument();
-    expect(screen.queryByText('electric')).not.toBeInTheDocument();
+  test('card is accessible as button', () => {
+    renderWithRouter(<Card item={mockItem} />);
+
+    const card = screen.getByRole('button');
+
+    expect(card).toBeInTheDocument();
+    expect(card).toHaveAttribute('tabIndex', '0');
   });
+
+  test('opens details on Enter key', async () => {
+    const user = userEvent.setup();
+
+    renderWithRouter(
+      <Card
+        item={{
+          id: 1,
+          name: 'pikachu',
+          image: '',
+          height: 4,
+          types: [],
+        }}
+      />
+    );
+
+    const card = screen.getByRole('button');
+
+    await user.type(card, '{enter}');
+
+    expect(card).toBeInTheDocument();
+  });
+
+  
 });

@@ -1,38 +1,55 @@
-import { Component } from 'react';
 import type { PokemonCardData } from '../../services/api';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 interface Props {
-    item: PokemonCardData;
+  item: PokemonCardData;
 }
 
-class Card extends Component<Props> {
-    render() {
-        const { item } = this.props;
+function Card({ item }: Props) {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-        return (
-            <div className="card">
-                <img
-                    src={item.image}
-                    alt={item.name}
-                />
+  const handleOpenDetails = () => {
+    navigate({
+      pathname: `/pokemon/${item.id}`,
+      search: searchParams.toString(),
+    });
+  };
 
-                <h3>{item.name}</h3>
+  return (
+    <div
+      className="card"
+      onClick={handleOpenDetails}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          handleOpenDetails();
+        }
+      }}
+    >
+      <img
+        src={item.image}
+        alt={item.name}
+      />
 
-                <p>Height: {item.height}</p>
+      <h3>{item.name}</h3>
 
-                <div className="types">
-                    {item.types.map((type) => (
-                        <span
-                            key={type}
-                            className="type"
-                        >
-                            {type}
-                        </span>
-                    ))}
-                </div>
-            </div>
-        );
-    }
+      <p>Height: {item.height}</p>
+
+      <div className="types">
+        {item.types.map((type) => (
+          <span
+            key={type}
+            className="type"
+          >
+            {type}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default Card;
+

@@ -1,0 +1,60 @@
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+
+  margin-top: 36px;
+}
+
+.pagination button {
+  min-width: 42px;
+  height: 42px;
+
+  border: none;
+
+  border-radius: 14px;
+
+  background:
+    rgba(15, 23, 42, 0.9);
+
+  color: #cbd5e1;
+
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    background 0.25s ease,
+    color 0.25s ease;
+}
+
+.pagination button:hover {
+  transform: translateY(-2px);
+
+  background:
+    rgba(30, 41, 59, 1);
+}
+
+.pagination .active {
+  background:
+    linear-gradient(
+      135deg,
+      #22f5d5,
+      #06b6d4
+    );
+
+  color: #02111b;
+
+  box-shadow:
+    0 0 20px rgba(34,245,213,0.45);
+}
+
+.pages{
+    display: flex;
+
+    justify-content: center;
+
+    gap: 8px;
+}

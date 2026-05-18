@@ -1,6 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import CardList from './CardList';
 import type { PokemonCardData } from '../../services/api';
+import { renderWithRouter } from '../../helpers/test.utils';
 
 describe('CardList component', () => {
   const mockItems: PokemonCardData[] = [
@@ -21,19 +22,19 @@ describe('CardList component', () => {
   ];
 
   test('renders all pokemon cards', () => {
-    render(<CardList items={mockItems} />);
+    renderWithRouter(<CardList items={mockItems} />);
 
     expect(screen.getByText('Pikachu')).toBeInTheDocument();
     expect(screen.getByText('Charizard')).toBeInTheDocument();
   });
 
   test('renders correct number of cards', () => {
-    render(<CardList items={mockItems} />);
+    renderWithRouter(<CardList items={mockItems} />);
     expect(screen.getAllByText(/Pikachu|Charizard/)).toHaveLength(2);
   });
 
   test('renders pokemon images with correct alt text', () => {
-    render(<CardList items={mockItems} />);
+    renderWithRouter(<CardList items={mockItems} />);
 
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(2);
@@ -48,22 +49,23 @@ describe('CardList component', () => {
   });
 
   test('renders empty list when no items provided', () => {
-    render(<CardList items={[]} />);
+    renderWithRouter(<CardList items={[]} />);
 
     expect(screen.queryByRole('img')).not.toBeInTheDocument();
     expect(screen.queryByText('Pikachu')).not.toBeInTheDocument();
   });
 
   test('renders results grid container', () => {
-    const { container } = render(<CardList items={mockItems} />);
+    const { container } = renderWithRouter(<CardList items={mockItems} />);
     expect(container.querySelector('.results-grid')).toBeInTheDocument();
   });
 
   test('renders pokemon types', () => {
-    render(<CardList items={mockItems} />);
+    renderWithRouter(<CardList items={mockItems} />);
 
     expect(screen.getByText('electric')).toBeInTheDocument();
     expect(screen.getByText('fire')).toBeInTheDocument();
     expect(screen.getByText('flying')).toBeInTheDocument();
   });
+  
 });

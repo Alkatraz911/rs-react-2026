@@ -1,44 +1,80 @@
-import React, { Component } from 'react';
+import {
+  useEffect,
+  useState,
+} from 'react';
 
-interface Props {
-  onSearch: (value: string) => void;
-  defaultValue: string;
-}
+import { useSearchParams } from 'react-router-dom';
 
-class Search extends Component<Props> {
-  state = {
-    value: this.props.defaultValue,
-  };
+import { useLocalStorage } from '../../hooks/useLocalStorage';
 
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.defaultValue !== this.props.defaultValue) {
-      this.setState({
-        value: this.props.defaultValue,
-      });
-    }
-  }
+function Search() {
+  const [searchParams, setSearchParams] =
+    useSearchParams();
 
-  handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ value: e.target.value });
-  };
+  const query =
+    searchParams.get('query') || '';
 
-  handleSubmit = () => {
-    this.props.onSearch(this.state.value);
-  };
-
-  render() {
-    return (
-      <div className="search">
-        <input
-          value={this.state.value}
-          onChange={this.handleChange}
-        />
-        <button onClick={this.handleSubmit}>
-          Search
-        </button>
-      </div>
+  const [savedSearch, setSavedSearch] =
+    useLocalStorage(
+      'search',
+      query
     );
+
+  const [value, setValue] =
+    useState(savedSearch);
+
+  useEffect(() => {
+    setValue(query);
+  }, [query]);
+
+  const handleSubmit = () => {
+    const trimmed = value.trim();
+
+    setSavedSearch(trimmed);
+
+    const params = new URLSearchParams(
+      searchParams
+    );
+
+    if (trimmed) {
+      params.set('query', trimmed);
+    } else {
+      params.delete('query');
+    }
+
+    params.set('page', '1');
+
+    setSearchParams(params);
+  };
+
+  const handleClearSearch = () => {
+    setSearchParams('');
+    setSavedSearch('');
   }
+
+  return (
+    <div className="search">
+      <input
+        value={value}
+        onChange={(e) =>
+          setValue(e.target.value)
+        }
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            handleSubmit();
+          }
+        }}
+        placeholder="Search pokemon..."
+      />
+      <button className="clear-search" onClick={handleClearSearch}>
+        X
+      </button>
+      <button onClick={handleSubmit}>
+        Search
+      </button>
+    </div>
+  );
 }
 
 export default Search;
+

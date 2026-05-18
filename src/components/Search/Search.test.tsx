@@ -1,129 +1,99 @@
-import { render, screen } from '@testing-library/react';
+import {  screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
 import Search from './Search';
+import { renderWithRouter } from '../../helpers/test.utils';
+import {
+  useLocation,
+} from 'react-router-dom';
 
+function LocationDisplay() {
+  const location = useLocation();
+
+  return (
+    <div data-testid="location">
+      {location.search}
+    </div>
+  );
+}
 describe('Search component', () => {
-  test('renders input and button', () => {
-    render(
-      <Search
-        onSearch={vi.fn()}
-        defaultValue=""
-      />
-    );
 
-    expect(
-      screen.getByRole('textbox')
-    ).toBeInTheDocument();
 
-    expect(
-      screen.getByRole('button', {
-        name: /search/i,
-      })
-    ).toBeInTheDocument();
-  });
+test('clears query param when search is empty', async () => {
+  const user = userEvent.setup();
 
-  test('renders default value', () => {
-    render(
-      <Search
-        onSearch={vi.fn()}
-        defaultValue="Rick"
-      />
-    );
+  renderWithRouter(
+    <>
+      <Search />
+      <LocationDisplay />
+    </>
+  );
 
-    expect(
-      screen.getByRole('textbox')
-    ).toHaveValue('Rick');
-  });
+  await user.click(
+    screen.getByRole('button', {
+      name: /search/i,
+    })
+  );
 
-  test('updates input value when user types', async () => {
-    const user = userEvent.setup();
+  expect(
+    screen.getByTestId('location')
+  ).not.toHaveTextContent('query=');
 
-    render(
-      <Search
-        onSearch={vi.fn()}
-        defaultValue=""
-      />
-    );
+  expect(
+    screen.getByTestId('location')
+  ).toHaveTextContent('?page=1');
+});
 
-    const input = screen.getByRole('textbox');
 
-    await user.type(input, 'Morty');
 
-    expect(input).toHaveValue('Morty');
-  });
+test('sets page=1 when search is empty', async () => {
+  const user = userEvent.setup();
 
-  test('calls onSearch with correct value', async () => {
-    const user = userEvent.setup();
+  renderWithRouter(
+    <>
+      <Search />
+      <LocationDisplay />
+    </>
+  );
 
-    const onSearch = vi.fn();
+  await user.click(
+    screen.getByRole('button', {
+      name: /search/i,
+    })
+  );
 
-    render(
-      <Search
-        onSearch={onSearch}
-        defaultValue=""
-      />
-    );
+  expect(
+    screen.getByTestId('location')
+  ).toHaveTextContent('?page=1');
+});
 
-    const input = screen.getByRole('textbox');
 
-    await user.type(input, 'Summer');
+test('sets query param after search', async () => {
+  const user = userEvent.setup();
 
-    await user.click(
-      screen.getByRole('button', {
-        name: /search/i,
-      })
-    );
+  renderWithRouter(
+    <>
+      <Search />
+      <LocationDisplay />
+    </>
+  );
 
-    expect(onSearch).toHaveBeenCalledTimes(1);
+  const input = screen.getByRole('textbox');
 
-    expect(onSearch).toHaveBeenCalledWith(
-      'Summer'
-    );
-  });
+  await user.type(input, 'Pikachu');
 
-  test('updates input when defaultValue prop changes', () => {
-    const { rerender } = render(
-      <Search
-        onSearch={vi.fn()}
-        defaultValue="Rick"
-      />
-    );
+  await user.click(
+    screen.getByRole('button', {
+      name: /search/i,
+    })
+  );
 
-    expect(
-      screen.getByRole('textbox')
-    ).toHaveValue('Rick');
+  expect(
+    screen.getByTestId('location')
+  ).toHaveTextContent(
+    '?query=Pikachu&page=1'
+  );
+});
 
-    rerender(
-      <Search
-        onSearch={vi.fn()}
-        defaultValue="Morty"
-      />
-    );
 
-    expect(
-      screen.getByRole('textbox')
-    ).toHaveValue('Morty');
-  });
 
-  test('calls onSearch with empty string', async () => {
-    const user = userEvent.setup();
-
-    const onSearch = vi.fn();
-
-    render(
-      <Search
-        onSearch={onSearch}
-        defaultValue=""
-      />
-    );
-
-    await user.click(
-      screen.getByRole('button', {
-        name: /search/i,
-      })
-    );
-
-    expect(onSearch).toHaveBeenCalledWith('');
-  });
 });
