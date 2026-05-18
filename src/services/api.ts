@@ -1,4 +1,3 @@
-
 export interface PokemonListItem {
   name: string;
   url: string;
@@ -7,14 +6,16 @@ export interface PokemonListItem {
 export interface PokemonCardData {
   id: number;
   name: string;
-  image: string;
+  image: string | null;
   height: number;
   types: string[];
 }
+
 export interface PokemonPageData {
   items: PokemonCardData[];
   next: string | null;
   previous: string | null;
+  count: number;
 }
 
 interface PokemonListResponse {
@@ -40,9 +41,36 @@ interface PokemonDetailsResponse {
   }[];
 }
 
+const transformPokemon = (
+  details: PokemonDetailsResponse
+): PokemonCardData => ({
+  id: details.id,
+  name: details.name,
+  image: details.sprites.front_default,
+  height: details.height,
+  types: details.types.map(
+    (t) => t.type.name
+  ),
+});
+
+const fetchPokemonDetails = async (
+  url: string
+): Promise<PokemonCardData> => {
+  const res = await fetch(url);
+
+  if (!res.ok) {
+    throw new Error('Failed details');
+  }
+
+  const data: PokemonDetailsResponse =
+    await res.json();
+
+  return transformPokemon(data);
+};
+
 export const fetchPokemons = async (
   offset = 0,
-  limit = 20
+  limit = 21
 ): Promise<PokemonPageData> => {
   const res = await fetch(
     `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`
@@ -55,38 +83,24 @@ export const fetchPokemons = async (
   const data: PokemonListResponse =
     await res.json();
 
-  const detailedPokemons = await Promise.all(
-    data.results.map(async (pokemon) => {
-      const detailsRes = await fetch(pokemon.url);
-
-      if (!detailsRes.ok) {
-        throw new Error('Failed details');
-      }
-
-      const details: PokemonDetailsResponse =
-        await detailsRes.json();
-
-      return {
-        id: details.id,
-        name: details.name,
-        image: details.sprites.front_default,
-        height: details.height,
-        types: details.types.map(
-          (t) => t.type.name
-        ),
-      };
-    })
+  const items = await Promise.all(
+    data.results.map((pokemon) =>
+      fetchPokemonDetails(pokemon.url)
+    )
   );
 
   return {
-    items: detailedPokemons,
+    items,
     next: data.next,
     previous: data.previous,
+    count: data.count,
   };
 };
 
 export const searchPokemons = async (
-  query: string
+  query: string,
+  page = 1,
+  limit = 21
 ): Promise<PokemonPageData> => {
   const res = await fetch(
     'https://pokeapi.co/api/v2/pokemon?limit=1000'
@@ -105,32 +119,41 @@ export const searchPokemons = async (
       .includes(query.toLowerCase())
   );
 
-  const detailedPokemons = await Promise.all(
-    filtered.map(async (pokemon) => {
-      const detailsRes = await fetch(pokemon.url);
+  const offset = (page - 1) * limit;
 
-      if (!detailsRes.ok) {
-        throw new Error('Failed details');
-      }
+  const paginated = filtered.slice(
+    offset,
+    offset + limit
+  );
 
-      const details: PokemonDetailsResponse =
-        await detailsRes.json();
-
-      return {
-        id: details.id,
-        name: details.name,
-        image: details.sprites.front_default,
-        height: details.height,
-        types: details.types.map(
-          (t) => t.type.name
-        ),
-      };
-    })
+  const items = await Promise.all(
+    paginated.map((pokemon) =>
+      fetchPokemonDetails(pokemon.url)
+    )
   );
 
   return {
-    items: detailedPokemons,
+    items,
     next: null,
     previous: null,
+    count: filtered.length,
   };
 };
+
+export const fetchPokemonById = async (
+  id: string
+): Promise<PokemonCardData> => {
+  const res = await fetch(
+    `https://pokeapi.co/api/v2/pokemon/${id}`
+  );
+
+  if (!res.ok) {
+    throw new Error('Failed to fetch pokemon');
+  }
+
+  const data: PokemonDetailsResponse =
+    await res.json();
+
+  return transformPokemon(data);
+};
+

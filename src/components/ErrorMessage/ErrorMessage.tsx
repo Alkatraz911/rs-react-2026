@@ -1,9 +1,17 @@
-import { Component } from 'react';
 
-class ErrorMessage extends Component<{ message: string }> {
-    render() {
-        return <div>{this.props.message}</div>;
-    }
+interface Props {
+  message: string;
+}
+
+function ErrorMessage({
+  message,
+}: Props) {
+  return (
+    <div data-testid="error-message">
+      {message}
+    </div>
+  );
 }
 
 export default ErrorMessage;
+

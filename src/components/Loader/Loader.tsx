@@ -1,9 +1,12 @@
-import  { Component } from 'react';
 
-class Loader extends Component {
-  render() {
-    return <div className='loader'></div>;
-  }
+function Loader() {
+  return (
+    <div
+      data-testid="loader"
+      className="loader"
+    />
+  );
 }
 
 export default Loader;
+

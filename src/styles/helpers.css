@@ -45,50 +45,35 @@
 
 .error h2 {
   font-size: 42px;
-
   font-weight: 800;
-
   color: white;
-
   letter-spacing: -1px;
-
   margin: 0;
 }
 
 .error p {
   color: #94a3b8;
-
   font-size: 18px;
-
   max-width: 500px;
-
   line-height: 1.6;
 }
 
 .error button {
   border: none;
-
   padding: 14px 24px;
-
   border-radius: 16px;
-
   cursor: pointer;
-
   font-size: 16px;
   font-weight: 700;
-
   color: white;
-
   background:
     linear-gradient(
       135deg,
       #3b82f6,
       #2563eb
     );
-
   box-shadow:
     0 10px 30px rgba(59,130,246,0.35);
-
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
@@ -97,10 +82,8 @@
 
 .error button:hover {
   transform: translateY(-3px);
-
   box-shadow:
     0 16px 40px rgba(59,130,246,0.45);
-
   background:
     linear-gradient(
       135deg,
