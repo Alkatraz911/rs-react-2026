@@ -1,0 +1,199 @@
+/* Default dark theme */
+:root,
+[data-theme='dark'] {
+  --color-bg: #020817;
+  --color-surface: rgba(15, 23, 42, 0.96);
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #f8fafc;
+  --color-text-muted: #94a3b8;
+  --color-accent: #22f5d5;
+  --color-accent-dim: rgba(34, 245, 213, 0.18);
+}
+
+[data-theme='light'] {
+  --color-bg: #f1f5f9;
+  --color-surface: rgba(255, 255, 255, 0.96);
+  --color-border: rgba(0, 0, 0, 0.1);
+  --color-text: #0f172a;
+  --color-text-muted: #64748b;
+  --color-accent: #0d9488;
+  --color-accent-dim: rgba(13, 148, 136, 0.12);
+}
+
+/* Apply theme to body */
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  transition:
+    background-color 0.25s ease,
+    color 0.25s ease;
+}
+
+[data-theme='light'] body {
+  background: var(--color-bg);
+}
+
+/* Navbar theme */
+[data-theme='light'] .navbar {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(241, 245, 249, 0.96)
+  );
+  border-color: rgba(13, 148, 136, 0.25);
+  box-shadow: 0 0 30px rgba(13, 148, 136, 0.06);
+}
+
+[data-theme='light'] .nav-link {
+  color: #475569;
+}
+
+[data-theme='light'] .nav-link:hover {
+  color: #0f172a;
+}
+
+[data-theme='light'] .nav-link.active {
+  color: #0d9488;
+}
+
+[data-theme='light'] .nav-link.active::after {
+  background: #0d9488;
+  box-shadow: 0 0 12px rgba(13, 148, 136, 0.6);
+}
+
+
+
+/* Card theme */
+[data-theme='light'] .card {
+  background: linear-gradient(145deg, #ffffff, #f8fafc);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .card:hover {
+  border-color: #3b82f6;
+  box-shadow: 0 16px 40px rgba(59, 130, 246, 0.15);
+}
+
+[data-theme='light'] .card--selected {
+  border-color: #0d9488;
+  box-shadow:
+    0 0 0 2px rgba(13, 148, 136, 0.2),
+    0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+[data-theme='light'] .card h3 {
+  color: #0f172a;
+}
+
+[data-theme='light'] .card p {
+  color: #64748b;
+}
+
+[data-theme='light'] .type {
+  background: rgba(100, 116, 139, 0.15);
+  color: #0f172a;
+}
+
+[data-theme='light'] .card-checkbox input[type='checkbox'] {
+  accent-color: #0d9488;
+}
+
+/* Right panel theme */
+[data-theme='light'] .right-panel {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(241, 245, 249, 0.96));
+  border-color: rgba(13, 148, 136, 0.2);
+  box-shadow:
+    0 0 30px rgba(13, 148, 136, 0.05),
+    inset 0 0 40px rgba(255, 255, 255, 0.5);
+}
+
+[data-theme='light'] .details h2,
+[data-theme='light'] .details p {
+  color: #0f172a;
+}
+
+[data-theme='light'] .close-btn {
+  background: rgba(239, 68, 68, 0.1);
+  color: #dc2626;
+}
+
+[data-theme='light'] .close-btn:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid rgba(34, 245, 213, 0.3);
+  background: rgba(34, 245, 213, 0.08);
+  color: #22f5d5;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background: rgba(34, 245, 213, 0.16);
+  transform: translateY(-1px);
+}
+
+[data-theme='light'] .theme-toggle {
+  border-color: rgba(13, 148, 136, 0.35);
+  background: rgba(13, 148, 136, 0.08);
+  color: #0d9488;
+}
+
+[data-theme='light'] .theme-toggle:hover {
+  background: rgba(13, 148, 136, 0.16);
+}
+
+/* Search theme */
+[data-theme='light'] .search input {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.15);
+  color: #0f172a;
+}
+
+[data-theme='light'] .search input::placeholder {
+  color: #94a3b8;
+}
+
+[data-theme='light'] .search {
+    background-color: inherit;
+}
+
+/* Pagination theme */
+[data-theme='light'] .pagination button {
+  background: rgba(255, 255, 255, 0.9);
+  border-color: rgba(0, 0, 0, 0.12);
+  color: #0f172a;
+}
+
+[data-theme='light'] .pagination button:hover:not(:disabled) {
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+[data-theme='light'] .pagination button.active {
+  background: rgba(13, 148, 136, 0.12);
+  border-color: #0d9488;
+  color: #0d9488;
+}
+
+/* Error boundary / messages */
+[data-theme='light'] .error-btn {
+  border-color: rgba(220, 38, 38, 0.3);
+  background: rgba(220, 38, 38, 0.07);
+  color: #dc2626;
+}
+
+/* About page theme */
+[data-theme='light'] .about-page {
+    background-color: inherit;
+}
