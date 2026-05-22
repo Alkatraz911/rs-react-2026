@@ -5,6 +5,7 @@
 }
 
 .card {
+  position: relative;
   background: linear-gradient(145deg,
       #1e293b,
       #0f172a);
@@ -18,12 +19,40 @@
   cursor: pointer;
 }
 
+.card--selected {
+  border-color: #22f5d5;
+  box-shadow:
+    0 0 0 2px rgba(34, 245, 213, 0.25),
+    0 10px 25px rgba(0, 0, 0, 0.3);
+}
 
 .card:hover {
   transform: translateY(-6px);
   border-color: #3b82f6;
   box-shadow:
     0 16px 40px rgba(59, 130, 246, 0.25);
+}
+
+.card--selected:hover {
+  border-color: #22f5d5;
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-checkbox input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+  accent-color: #22f5d5;
+  cursor: pointer;
 }
 
 .card img {

@@ -1,54 +1,51 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
+import { useTheme } from '../../context/ThemeContext';
 
 function Navbar() {
-    const [shouldThrow, setShouldThrow] =
-        useState(false);
+  const [shouldThrow, setShouldThrow] = useState(false);
+  const { theme, toggleTheme } = useTheme();
 
-    if (shouldThrow) {
-        throw new Error(
-            'Test Error Boundary'
-        );
-    }
+  if (shouldThrow) {
+    throw new Error('Test Error Boundary');
+  }
 
-    return (
+  return (
+    <nav className="navbar">
+      <NavLink
+        to="/"
+        className={({ isActive }) =>
+          isActive ? 'nav-link active' : 'nav-link'
+        }
+      >
+        Home
+      </NavLink>
 
-        <nav className="navbar">
+      <NavLink
+        to="/about"
+        className={({ isActive }) =>
+          isActive ? 'nav-link active' : 'nav-link'
+        }
+      >
+        About
+      </NavLink>
 
-            <NavLink
-                to="/"
-                className={({ isActive }) =>
-                    isActive
-                        ? 'nav-link active'
-                        : 'nav-link'
-                }
-            >
-                Home
-            </NavLink>
+      <button
+        className="theme-toggle"
+        onClick={toggleTheme}
+        aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+      >
+        {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+      </button>
 
-            <NavLink
-                to="/about"
-                className={({ isActive }) =>
-                    isActive
-                        ? 'nav-link active'
-                        : 'nav-link'
-                }
-            >
-                About
-            </NavLink>
-
-
-            <button
-                className="error-btn"
-                onClick={() =>
-                    setShouldThrow(true)
-                }
-            >
-                Test Error Boundary
-            </button>
-        </nav>
-
-    );
+      <button
+        className="error-btn"
+        onClick={() => setShouldThrow(true)}
+      >
+        Test Error Boundary
+      </button>
+    </nav>
+  );
 }
 
 export default Navbar;
