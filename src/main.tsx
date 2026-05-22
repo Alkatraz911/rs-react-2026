@@ -16,6 +16,7 @@ import './styles/navbar.css';
 import './styles/notFoundPage.css';
 import './styles/aboutPage.css';
 import './styles/theme.css'
+import './styles/flyout.css'
 
 import App from './App.tsx'
 
