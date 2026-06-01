@@ -33,6 +33,7 @@ function HomePage() {
     loading,
     error,
     totalPages,
+    refetch,
   } = usePokemonList(
     query,
     currentPage
@@ -50,6 +51,10 @@ function HomePage() {
     setSearchParams(params);
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   return (
     <div
       className={
@@ -65,11 +70,27 @@ function HomePage() {
           {loading && <Loader />}
 
           {error && (
-            <ErrorMessage message={error} />
+            <div className="error-container">
+              <ErrorMessage message={error} />
+              <button
+                className="refresh-btn"
+                onClick={handleRefresh}
+              >
+                Try Again
+              </button>
+            </div>
           )}
 
           {!loading && !error && (
-            <CardList items={items} />
+            <>
+              <CardList items={items} />
+              <button
+                className="refresh-btn"
+                onClick={handleRefresh}
+              >
+                Refresh
+              </button>
+            </>
           )}
         </div>
 

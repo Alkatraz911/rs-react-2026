@@ -182,9 +182,6 @@
 }
 
 .close-btn {
-  position: absolute;
-  top: 22px;
-  right: 22px;
 
   border: none;
 
@@ -211,4 +208,61 @@
     rgba(239, 68, 68, 0.25);
 
   transform: translateY(-2px);
+}
+
+.refresh-btn {
+  border: none;
+
+  background:
+    rgba(34, 245, 213, 0.16);
+
+  color: #22f5d5;
+
+  padding: 10px 16px;
+
+  border-radius: 14px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+  margin-top: 10px;
+  transition:
+    background 0.25s ease,
+    transform 0.25s ease;
+}
+
+.refresh-btn:hover {
+  background:
+    rgba(34, 245, 213, 0.25);
+
+  transform: translateY(-2px);
+}
+
+.error-container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  align-items: center;
+}
+
+.details-header {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 24px;
+
+  position: relative;
+}
+
+.details-error {
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  align-items: center;
 }

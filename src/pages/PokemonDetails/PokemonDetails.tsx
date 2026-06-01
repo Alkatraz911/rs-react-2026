@@ -27,6 +27,7 @@ function PokemonDetails() {
     pokemon,
     loading,
     error,
+    refetch,
   } = usePokemonDetails(id);
 
   const handleClose = () => {
@@ -45,13 +46,25 @@ function PokemonDetails() {
     });
   };
 
+  const handleRefresh = () => {
+    refetch();
+  };
+
   if (loading) {
     return <Loader />;
   }
 
   if (error) {
     return (
-      <ErrorMessage message={error} />
+      <div className="details-error">
+        <ErrorMessage message={error} />
+        <button
+          className="refresh-btn"
+          onClick={handleRefresh}
+        >
+          Try Again
+        </button>
+      </div>
     );
   }
 
@@ -61,12 +74,20 @@ function PokemonDetails() {
 
   return (
     <div className="details">
-      <button
-        className="close-btn"
-        onClick={handleClose}
-      >
-        Close
-      </button>
+      <div className="details-header">
+        <button
+          className="close-btn"
+          onClick={handleClose}
+        >
+          Close
+        </button>
+        <button
+          className="refresh-btn"
+          onClick={handleRefresh}
+        >
+          Refresh
+        </button>
+      </div>
 
       <img
         src={pokemon.image ?? undefined}

@@ -1,64 +1,46 @@
-import {
-  useEffect,
-  useState,
-} from 'react';
-
-import {
-  fetchPokemonById,
-  type PokemonCardData,
-} from '../services/api';
+import { useGetPokemonDetailsQuery } from '../store/api';
+import type { PokemonCardData } from '../services/api';
 
 interface ReturnType {
   pokemon: PokemonCardData | null;
   loading: boolean;
   error: string | null;
+  refetch: () => void;
 }
 
 export const usePokemonDetails = (
   id: string | undefined
 ): ReturnType => {
-  const [pokemon, setPokemon] =
-    useState<PokemonCardData | null>(
-      null
-    );
+  const { data, isLoading, error, refetch } =
+    useGetPokemonDetailsQuery(id, {
+      skip: !id,
+    });
 
-  const [loading, setLoading] =
-    useState(false);
-
-  const [error, setError] = useState<
-    string | null
-  >(null);
-
-  useEffect(() => {
-    if (!id) {
-      return;
+  const getErrorMessage = (): string | null => {
+    if (!error) {
+      return null;
     }
 
-    const loadPokemon = async () => {
-      setLoading(true);
-      setError(null);
+    if (typeof error === 'string') {
+      return error;
+    }
 
-      try {
-        const data =
-          await fetchPokemonById(id);
+    if ('data' in error && typeof error.data === 'string') {
+      return error.data;
+    }
 
-        setPokemon(data);
-      } catch {
-        setError(
-          'Failed to load pokemon'
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
+    if ('message' in error && error.message) {
+      return error.message;
+    }
 
-    loadPokemon();
-  }, [id]);
+    return 'Failed to load pokemon';
+  };
 
   return {
-    pokemon,
-    loading,
-    error,
+    pokemon: data || null,
+    loading: isLoading,
+    error: getErrorMessage(),
+    refetch: () => refetch(),
   };
 };
 
