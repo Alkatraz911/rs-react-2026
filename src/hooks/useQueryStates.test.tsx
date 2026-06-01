@@ -142,4 +142,51 @@ describe('Cache Behavior', () => {
 
     expect(result.current.loading).toBe(firstLoading);
   });
+
+  it('usePokemonList should initialize with correct values', () => {
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper }
+    );
+
+    expect(result.current.items).toEqual([]);
+    expect(result.current.totalPages).toBe(1);
+    expect(result.current.error).toBe(null);
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('usePokemonList should work with different queries', () => {
+    const { result: emptyResult } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper }
+    );
+
+    const { result: searchResult } = renderHook(
+      () => usePokemonList('pikachu', 1),
+      { wrapper }
+    );
+
+    expect(emptyResult.current.items).toEqual([]);
+    expect(searchResult.current.items).toEqual([]);
+  });
+
+  it('usePokemonDetails should work with string id', () => {
+    const { result } = renderHook(
+      () => usePokemonDetails('pikachu'),
+      { wrapper }
+    );
+
+    expect(result.current.pokemon).toBe(null);
+    expect(result.current.loading).toBe(true);
+  });
+
+  it('usePokemonDetails should work with numeric id as string', () => {
+    const { result } = renderHook(
+      () => usePokemonDetails('25'),
+      { wrapper }
+    );
+
+    expect(result.current.pokemon).toBe(null);
+    expect(result.current.loading).toBe(true);
+  });
 });

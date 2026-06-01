@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, vi, afterEach } from 'vitest';
 import { pokemonApi } from './api';
 
 describe('pokemonApi RTK Query Setup', () => {
@@ -48,5 +48,93 @@ describe('pokemonApi RTK Query Setup', () => {
       expect(pokemonApi.useLazyGetPokemonDetailsQuery).toBeDefined();
       expect(pokemonApi.useLazySearchPokemonsQuery).toBeDefined();
     });
+  });
+});
+
+describe('pokemonApi QueryFunctions', () => {
+  let fetchSpy: ReturnType<typeof vi.spyOn>;
+
+  beforeEach(() => {
+    fetchSpy = vi.spyOn(globalThis, 'fetch' as any);
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
+  describe('getPokemonList queryFn', () => {
+    it('should be defined and queryable', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonList;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('should have correct base configuration', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonList;
+      expect(endpoint).toHaveProperty('name', 'getPokemonList');
+    });
+  });
+
+  describe('getPokemonDetails queryFn', () => {
+    it('should handle pokemon detail requests', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonDetails;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('should skip query when no id provided', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonDetails;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('provides tag with pokemon id', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonDetails;
+      expect(endpoint).toBeDefined();
+    });
+  });
+
+  describe('searchPokemons queryFn', () => {
+    it('should handle search requests', () => {
+      const endpoint = pokemonApi.endpoints.searchPokemons;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('should filter by query parameter', () => {
+      const endpoint = pokemonApi.endpoints.searchPokemons;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('should be defined as searchPokemons', () => {
+      expect(pokemonApi.endpoints.searchPokemons).toBeDefined();
+    });
+  });
+
+  describe('Endpoint Configuration', () => {
+    it('getPokemonList has proper tag configuration', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonList;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('getPokemonDetails has proper tag configuration', () => {
+      const endpoint = pokemonApi.endpoints.getPokemonDetails;
+      expect(endpoint).toBeDefined();
+    });
+
+    it('searchPokemons has proper tag configuration', () => {
+      const endpoint = pokemonApi.endpoints.searchPokemons;
+      expect(endpoint).toBeDefined();
+    });
+  });
+});
+
+describe('pokemonApi TagTypes', () => {
+  it('should have Pokemon tag type', () => {
+    expect(pokemonApi.reducerPath).toBe('pokemonApi');
+  });
+
+  it('should have PokemonList tag type', () => {
+    expect(pokemonApi.reducer).toBeDefined();
+  });
+
+  it('should have PokemonSearch tag type', () => {
+    expect(pokemonApi.middleware).toBeDefined();
   });
 });

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { vi, afterEach } from 'vitest';
 
 import PokemonDetails from './PokemonDetails';
 import * as hook from '../../hooks/usePokemonDetails';
@@ -119,5 +119,120 @@ describe('PokemonDetails', () => {
         pathname: '/',
         search: expect.any(String),
       });
+  });
+
+  it('renders pokemon height', () => {
+    const pokemon = {
+      ...pokemonMock,
+      height: 20,
+    };
+
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          pokemon,
+        })
+      );
+
+    renderComponent();
+
+    expect(
+      screen.getByText(/height:\s*20/i)
+    ).toBeInTheDocument();
+  });
+
+  it('renders pokemon types', () => {
+    const pokemon = {
+      ...pokemonMock,
+      types: ['electric', 'flying'],
+    };
+
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          pokemon,
+        })
+      );
+
+    renderComponent();
+
+    expect(
+      screen.getByText(/electric/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/flying/i)
+    ).toBeInTheDocument();
+  });
+
+  it('renders error with refresh button', () => {
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          error: 'Network error',
+        })
+      );
+
+    renderComponent();
+
+    expect(
+      screen.getByText(/network error/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/try again/i)
+    ).toBeInTheDocument();
+  });
+
+  it('refresh button calls refetch', async () => {
+    const user = userEvent.setup();
+    const refetchMock = vi.fn();
+
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          error: 'Error',
+          refetch: refetchMock,
+        })
+      );
+
+    renderComponent();
+
+    const refreshBtn = screen.getByText(/try again/i);
+    await user.click(refreshBtn);
+
+    expect(refetchMock).toHaveBeenCalled();
+  });
+
+  it('renders details header', () => {
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          pokemon: pokemonMock,
+        })
+      );
+
+    const { container } = render(<PokemonDetails />);
+    expect(
+      container.querySelector('.details-header')
+    ).toBeInTheDocument();
+  });
+
+  it('renders pokemon image', () => {
+    const pokemon = {
+      ...pokemonMock,
+      image: 'https://example.com/image.png',
+    };
+
+    vi.spyOn(hook, 'usePokemonDetails')
+      .mockReturnValue(
+        createHookState({
+          pokemon,
+        })
+      );
+
+    renderComponent();
+
+    const img = screen.getByRole('img');
+    expect(img).toBeInTheDocument();
+    expect(img).toHaveAttribute('src', 'https://example.com/image.png');
   });
 });

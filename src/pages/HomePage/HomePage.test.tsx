@@ -1,6 +1,6 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
+import { vi, beforeEach } from 'vitest';
 
 import HomePage from './HomePage';
 import { renderWithRouter } from '../../helpers/test.utils';
@@ -154,5 +154,136 @@ describe('HomePage', () => {
     test('renders right panel when details route active', () => {
         renderWithRouter(<HomePage />, '/pokemon/1');
         expect(document.querySelector('.right-panel')).toBeInTheDocument();
+    });
+
+    test('renders error container with try again button', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: 'Network error',
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        const { container } = renderWithRouter(<HomePage />);
+        expect(container.querySelector('.error-container')).toBeInTheDocument();
+        expect(screen.getByText('Try Again')).toBeInTheDocument();
+    });
+
+    test('try again button calls refetch', async () => {
+        const user = userEvent.setup();
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: 'Network error',
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        renderWithRouter(<HomePage />);
+        const tryAgainBtn = screen.getByText('Try Again');
+        await user.click(tryAgainBtn);
+        expect(mockRefetch).toHaveBeenCalled();
+    });
+
+    test('refresh button is shown when data is loaded', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [
+                {
+                    id: 1,
+                    name: 'bulbasaur',
+                    image: null,
+                    height: 7,
+                    types: ['grass'],
+                },
+            ],
+            loading: false,
+            error: null,
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        renderWithRouter(<HomePage />);
+        expect(screen.getByText('Refresh')).toBeInTheDocument();
+    });
+
+    test('refresh button calls refetch', async () => {
+        const user = userEvent.setup();
+        mockedUsePokemonList.mockReturnValue({
+            items: [
+                {
+                    id: 1,
+                    name: 'bulbasaur',
+                    image: null,
+                    height: 7,
+                    types: ['grass'],
+                },
+            ],
+            loading: false,
+            error: null,
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        renderWithRouter(<HomePage />);
+        const refreshBtn = screen.getByText('Refresh');
+        await user.click(refreshBtn);
+        expect(mockRefetch).toHaveBeenCalled();
+    });
+
+    test('handles search query from search params', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: null,
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        renderWithRouter(<HomePage />, '/?query=pikachu&page=1');
+        expect(mockedUsePokemonList).toHaveBeenCalledWith('pikachu', 1);
+    });
+
+    test('handles page number from search params', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: null,
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        renderWithRouter(<HomePage />, '/?page=2');
+        expect(mockedUsePokemonList).toHaveBeenCalledWith('', 2);
+    });
+
+    test('does not render pagination when loading', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: true,
+            error: null,
+            totalPages: 5,
+            refetch: mockRefetch,
+        });
+        const { container } = renderWithRouter(<HomePage />);
+        expect(container.querySelector('.pagination')).not.toBeInTheDocument();
+    });
+
+    test('does not render pagination when error', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: 'Error',
+            totalPages: 5,
+            refetch: mockRefetch,
+        });
+        const { container } = renderWithRouter(<HomePage />);
+        expect(container.querySelector('.pagination')).not.toBeInTheDocument();
+    });
+
+    test('renders with details layout when on pokemon route', () => {
+        mockedUsePokemonList.mockReturnValue({
+            items: [],
+            loading: false,
+            error: null,
+            totalPages: 1,
+            refetch: mockRefetch,
+        });
+        const { container } = renderWithRouter(<HomePage />, '/pokemon/1');
+        expect(container.querySelector('.with-details')).toBeInTheDocument();
     });
 });
