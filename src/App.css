@@ -411,19 +411,7 @@ body {
   margin-bottom: 18px;
 }
 
-.close-btn {
-  border: none;
-  background:
-    rgba(239, 68, 68, 0.16);
-  color: #f87171;
-  padding: 10px 16px;
-  border-radius: 14px;
-  font-weight: 700;
-  cursor: pointer;
-  transition:
-    background 0.25s ease,
-    transform 0.25s ease;
-}
+
 
 .close-btn:hover {
   background:

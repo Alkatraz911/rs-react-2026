@@ -182,9 +182,6 @@
 }
 
 .close-btn {
-  position: absolute;
-  top: 22px;
-  right: 22px;
 
   border: none;
 
@@ -228,7 +225,7 @@
   font-weight: 700;
 
   cursor: pointer;
-
+  margin-top: 10px;
   transition:
     background 0.25s ease,
     transform 0.25s ease;
@@ -251,7 +248,7 @@
 
 .details-header {
   display: flex;
-
+  width: 100%;
   justify-content: space-between;
   align-items: center;
 
