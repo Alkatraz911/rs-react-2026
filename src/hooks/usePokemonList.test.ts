@@ -1,192 +1,224 @@
-import { renderHook } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { renderHook, waitFor, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { createElement } from 'react';
 import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
 
 import { usePokemonList } from './usePokemonList';
-import { store } from '../store/store';
+import { pokemonApi } from '../store/api';
+import selectedReducer from '../store/selectedSlice';
 
-const wrapper = ({ children }: { children: ReactNode }) =>
-  createElement(Provider, { store, children });
+const makeStore = () =>
+  configureStore({
+    reducer: {
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
+      selected: selectedReducer,
+    },
+    middleware: (getDefault) =>
+      getDefault().concat(pokemonApi.middleware),
+  });
+
+const makeWrapper = (store: ReturnType<typeof makeStore>) =>
+  ({ children }: { children: ReactNode }) =>
+    createElement(Provider, { store, children });
+
+const mockListResponse = {
+  count: 1302,
+  next: 'next-url',
+  previous: null,
+  results: [
+    { name: 'pikachu', url: 'https://pokeapi.co/api/v2/pokemon/25/' },
+  ],
+};
+
+const mockPikachuDetails = {
+  id: 25,
+  name: 'pikachu',
+  height: 4,
+  sprites: { front_default: 'pikachu.png' },
+  types: [{ type: { name: 'electric' } }],
+};
+
+const makeResponse = (body: unknown, ok = true) =>
+  ({
+    ok,
+    status: ok ? 200 : 500,
+    json: async () => body,
+  }) as Response;
 
 describe('usePokemonList', () => {
-  describe('Initial State', () => {
-    test('returns loading state initially', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  let store: ReturnType<typeof makeStore>;
+  let fetchSpy: ReturnType<typeof vi.spyOn>;
 
-      expect(result.current.loading).toBe(true);
-      expect(Array.isArray(result.current.items)).toBe(true);
-      expect(result.current.items.length).toBe(0);
-      expect(result.current.error).toBe(null);
-      expect(result.current.totalPages).toBe(1);
-    });
+  beforeEach(() => {
+    store = makeStore();
+    fetchSpy = vi.spyOn(globalThis, 'fetch' as never);
   });
 
-  describe('List State Properties', () => {
-    test('returns items array', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(Array.isArray(result.current.items)).toBe(true);
-    });
-
-    test('returns totalPages as number', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(typeof result.current.totalPages).toBe('number');
-      expect(result.current.totalPages).toBeGreaterThanOrEqual(1);
-    });
-
-    test('returns error as null or string', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      const isErrorValid =
-        result.current.error === null ||
-        typeof result.current.error === 'string';
-      expect(isErrorValid).toBe(true);
-    });
-
-    test('returns loading as boolean', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(typeof result.current.loading).toBe('boolean');
-    });
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
-  describe('Refetch Function', () => {
-    test('refetch is a function', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  it('returns loading state initially', () => {
+    fetchSpy.mockImplementation(() => new Promise(() => {}) as never);
 
-      expect(typeof result.current.refetch).toBe('function');
-    });
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
 
-    test('refetch can be called without errors', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(() => result.current.refetch()).not.toThrow();
-    });
+    expect(result.current.loading).toBe(true);
+    expect(result.current.items).toEqual([]);
+    expect(result.current.error).toBeNull();
+    expect(result.current.totalPages).toBe(1);
   });
 
-  describe('Search Parameter Handling', () => {
-    test('handles empty query', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  it('returns transformed items on success', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(makeResponse(mockListResponse) as never)
+      .mockResolvedValueOnce(makeResponse(mockPikachuDetails) as never);
 
-      expect(result.current.items).toEqual([]);
-      expect(result.current.error).toBe(null);
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    test('handles search query string', () => {
-      const { result } = renderHook(
-        () => usePokemonList('pikachu', 1),
-        { wrapper }
-      );
-
-      expect(Array.isArray(result.current.items)).toBe(true);
-      const isErrorValid =
-        result.current.error === null ||
-        typeof result.current.error === 'string';
-      expect(isErrorValid).toBe(true);
-    });
+    expect(result.current.items).toHaveLength(1);
+    expect(result.current.items[0].name).toBe('pikachu');
+    expect(result.current.error).toBeNull();
   });
 
-  describe('Pagination', () => {
-    test('handles page 1', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  it('calculates totalPages based on count', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(makeResponse(mockListResponse) as never)
+      .mockResolvedValueOnce(makeResponse(mockPikachuDetails) as never);
 
-      expect(result.current.totalPages).toBeGreaterThanOrEqual(1);
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    test('handles different page numbers', () => {
-      const { result: result1 } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      const { result: result2 } = renderHook(
-        () => usePokemonList('', 2),
-        { wrapper }
-      );
-
-      expect(typeof result1.current.totalPages).toBe('number');
-      expect(typeof result2.current.totalPages).toBe('number');
-    });
-
-    test('calculates total pages correctly', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(result.current.totalPages).toBeGreaterThanOrEqual(1);
-    });
+    expect(result.current.totalPages).toBe(Math.ceil(1302 / 21));
   });
 
-  describe('State Consistency', () => {
-    test('maintains state across re-renders', () => {
-      const { result, rerender } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  it('uses search query when provided', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(makeResponse(mockListResponse) as never)
+      .mockResolvedValueOnce(makeResponse(mockPikachuDetails) as never);
 
-      const firstLoading = result.current.loading;
-      const firstError = result.current.error;
+    const { result } = renderHook(
+      () => usePokemonList('pika', 1),
+      { wrapper: makeWrapper(store) }
+    );
 
-      rerender();
-
-      expect(result.current.loading).toBe(firstLoading);
-      expect(result.current.error).toBe(firstError);
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
     });
 
-    test('maintains empty items on initial load', () => {
-      const { result } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
-
-      expect(result.current.items).toEqual([]);
-    });
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://pokeapi.co/api/v2/pokemon?limit=1000'
+    );
+    expect(result.current.items[0].name).toBe('pikachu');
   });
 
-  describe('Search vs Browse Mode', () => {
-    test('uses different queries for search and browse', () => {
-      const { result: browseResult } = renderHook(
-        () => usePokemonList('', 1),
-        { wrapper }
-      );
+  it('returns error string when list fetch fails', async () => {
+    fetchSpy.mockResolvedValueOnce(makeResponse(null, false) as never);
 
-      const { result: searchResult } = renderHook(
-        () => usePokemonList('pikachu', 1),
-        { wrapper }
-      );
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
 
-      expect(typeof browseResult.current.loading).toBe('boolean');
-      expect(typeof searchResult.current.loading).toBe('boolean');
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeTruthy();
+    expect(typeof result.current.error).toBe('string');
+  });
+
+  it('returns error string when search fetch fails', async () => {
+    fetchSpy.mockResolvedValueOnce(makeResponse(null, false) as never);
+
+    const { result } = renderHook(
+      () => usePokemonList('pika', 1),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeTruthy();
+  });
+
+  it('returns error on network failure', async () => {
+    fetchSpy.mockRejectedValueOnce(new Error('network down') as never);
+
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    expect(result.current.error).toBeTruthy();
+  });
+
+  it('builds correct offset for given page', async () => {
+    fetchSpy.mockResolvedValueOnce(
+      makeResponse({ count: 0, next: null, previous: null, results: [] }) as never
+    );
+
+    renderHook(
+      () => usePokemonList('', 3),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(fetchSpy).toHaveBeenCalled();
+    });
+
+    expect(fetchSpy).toHaveBeenCalledWith(
+      'https://pokeapi.co/api/v2/pokemon?offset=42&limit=21'
+    );
+  });
+
+  it('refetch triggers a new fetch', async () => {
+    fetchSpy
+      .mockResolvedValueOnce(makeResponse(mockListResponse) as never)
+      .mockResolvedValueOnce(makeResponse(mockPikachuDetails) as never)
+      .mockResolvedValueOnce(makeResponse(mockListResponse) as never)
+      .mockResolvedValueOnce(makeResponse(mockPikachuDetails) as never);
+
+    const { result } = renderHook(
+      () => usePokemonList('', 1),
+      { wrapper: makeWrapper(store) }
+    );
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const callsBeforeRefetch = fetchSpy.mock.calls.length;
+
+    act(() => {
+      result.current.refetch();
+    });
+
+    await waitFor(() => {
+      expect(fetchSpy.mock.calls.length).toBeGreaterThan(callsBeforeRefetch);
     });
   });
 });

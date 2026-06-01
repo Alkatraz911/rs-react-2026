@@ -19,28 +19,3 @@ export const renderWithRouter = (
     </Provider>
   );
 };
-
-export const renderWithRedux = (
-  ui: ReactElement
-) => {
-  return render(
-    <Provider store={store}>
-      {ui}
-    </Provider>
-  );
-};
-
-export const renderWithRouterAndRedux = (
-  ui: ReactElement,
-  route = '/'
-) => {
-  return render(
-    <Provider store={store}>
-      <MemoryRouter initialEntries={[route]}>
-        <ThemeProvider>
-          {ui}
-        </ThemeProvider>
-      </MemoryRouter>
-    </Provider>
-  );
-};
