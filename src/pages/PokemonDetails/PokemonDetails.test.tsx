@@ -40,6 +40,7 @@ const createHookState = (
   pokemon: null,
   loading: false,
   error: null,
+  refetch: vi.fn(),
   ...overrides,
 });
 

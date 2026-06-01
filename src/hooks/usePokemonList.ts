@@ -1,17 +1,15 @@
-
-import { useEffect, useState } from 'react';
-
 import {
-  fetchPokemons,
-  searchPokemons,
-  type PokemonCardData,
-} from '../services/api';
+  useGetPokemonListQuery,
+  useSearchPokemonsQuery,
+} from '../store/api';
+import type { PokemonCardData } from '../services/api';
 
 interface ReturnType {
   items: PokemonCardData[];
   loading: boolean;
   error: string | null;
   totalPages: number;
+  refetch: () => void;
 }
 
 const LIMIT = 21;
@@ -20,59 +18,58 @@ export const usePokemonList = (
   query: string,
   page: number
 ): ReturnType => {
-  const [items, setItems] = useState<
-    PokemonCardData[]
-  >([]);
+  const offset = (page - 1) * LIMIT;
 
-  const [loading, setLoading] =
-    useState(false);
+  const listQuery = useGetPokemonListQuery(
+    { offset, limit: LIMIT },
+    { skip: !!query }
+  );
 
-  const [error, setError] = useState<
-    string | null
-  >(null);
+  const searchQuery = useSearchPokemonsQuery(
+    { query, page, limit: LIMIT },
+    { skip: !query }
+  );
 
-  const [totalPages, setTotalPages] =
-    useState(1);
+  const activeQuery = query ? searchQuery : listQuery;
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      setError(null);
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = activeQuery;
 
-      try {
-        const offset = (page - 1) * LIMIT;
+  const getErrorMessage = (): string | null => {
+    if (!error) {
+      return null;
+    }
 
-        const data = query
-          ? await searchPokemons(
-              query,
-              page,
-              LIMIT
-            )
-          : await fetchPokemons(
-              offset,
-              LIMIT
-            );
+    if (typeof error === 'string') {
+      return error;
+    }
 
-        setItems(data.items);
+    if ('data' in error && typeof error.data === 'string') {
+      return error.data;
+    }
 
-        setTotalPages(
-          Math.ceil(data.count / LIMIT)
-        );
-      } catch {
-        setError('Failed to load data');
-      } finally {
-        setLoading(false);
-      }
-    };
+    if ('message' in error && error.message) {
+      return error.message;
+    }
 
-    loadData();
-  }, [query, page]);
+    return 'Failed to load data';
+  };
+
+  const items = data?.items || [];
+  const totalPages = data
+    ? Math.ceil(data.count / LIMIT)
+    : 1;
 
   return {
     items,
-    loading,
-    error,
+    loading: isLoading,
+    error: getErrorMessage(),
     totalPages,
+    refetch: () => refetch(),
   };
 };
 

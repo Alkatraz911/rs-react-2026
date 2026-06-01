@@ -23,6 +23,8 @@ vi.mock('../../hooks/usePokemonList', () => ({
 
 const mockedUsePokemonList = vi.mocked(usePokemonList);
 
+const mockRefetch = vi.fn();
+
 describe('HomePage', () => {
     beforeEach(() => {
         vi.clearAllMocks();
@@ -34,6 +36,7 @@ describe('HomePage', () => {
             loading: true,
             error: null,
             totalPages: 1,
+            refetch: mockRefetch,
         });
         renderWithRouter(<HomePage />);
         expect(screen.getByTestId('loader')).toBeInTheDocument();
@@ -45,6 +48,7 @@ describe('HomePage', () => {
             loading: false,
             error: 'Failed to load',
             totalPages: 1,
+            refetch: mockRefetch,
         });
         renderWithRouter(<HomePage />);
         expect(screen.getByText(/failed to load/i)).toBeInTheDocument();
@@ -64,6 +68,7 @@ describe('HomePage', () => {
             loading: false,
             error: null,
             totalPages: 1,
+            refetch: mockRefetch,
         });
         renderWithRouter(<HomePage />);
         expect(screen.getByText('pikachu')).toBeInTheDocument();
@@ -83,6 +88,7 @@ describe('HomePage', () => {
             loading: false,
             error: null,
             totalPages: 5,
+            refetch: mockRefetch,
         });
         renderWithRouter(<HomePage />);
         expect(screen.getByText('1')).toBeInTheDocument();
@@ -104,6 +110,7 @@ describe('HomePage', () => {
             loading: false,
             error: null,
             totalPages: 5,
+            refetch: mockRefetch,
         });
 
         renderWithRouter(
@@ -126,6 +133,7 @@ describe('HomePage', () => {
             loading: false,
             error: null,
             totalPages: 1,
+            refetch: mockRefetch,
         });
         const { container } = renderWithRouter(<HomePage />, '/');
         expect(container.querySelector('.app-layout')).toBeInTheDocument();
@@ -137,6 +145,7 @@ describe('HomePage', () => {
             loading: false,
             error: null,
             totalPages: 1,
+            refetch: mockRefetch,
         });
         renderWithRouter(<HomePage />);
         expect(screen.getByRole('textbox')).toBeInTheDocument();
