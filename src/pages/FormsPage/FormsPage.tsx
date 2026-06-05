@@ -1,14 +1,20 @@
 import { useState } from 'react';
 import Modal from '../../components/Modal/Modal';
 import SubmissionCard from '../../components/SubmissionCard/SubmissionCard';
-import { useAppSelector } from '../../store/hooks';
-
-type FormVariant = 'uncontrolled' | 'hookForm';
+import UncontrolledForm from '../../components/UncontrolledForm/UncontrolledForm';
+import HookForm from '../../components/HookForm/HookForm';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import {
+  addSubmission,
+  type FormSource,
+  type SubmissionData,
+} from '../../store/formsSlice';
 
 function FormsPage() {
   const [openVariant, setOpenVariant] =
-    useState<FormVariant | null>(null);
+    useState<FormSource | null>(null);
 
+  const dispatch = useAppDispatch();
   const submissions = useAppSelector(
     (state) => state.forms.submissions
   );
@@ -17,6 +23,12 @@ function FormsPage() {
   );
 
   const handleClose = () => setOpenVariant(null);
+
+  const handleSubmit =
+    (source: FormSource) => (data: SubmissionData) => {
+      dispatch(addSubmission({ data, source }));
+      setOpenVariant(null);
+    };
 
   const modalTitle =
     openVariant === 'uncontrolled'
@@ -74,7 +86,12 @@ function FormsPage() {
         onClose={handleClose}
         title={modalTitle}
       >
-        <p>Form content will be added in the next feature.</p>
+        {openVariant === 'uncontrolled' && (
+          <UncontrolledForm onSubmit={handleSubmit('uncontrolled')} />
+        )}
+        {openVariant === 'hookForm' && (
+          <HookForm onSubmit={handleSubmit('hookForm')} />
+        )}
       </Modal>
     </main>
   );
