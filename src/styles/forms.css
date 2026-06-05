@@ -29,3 +29,78 @@
   filter: brightness(0.95);
   outline: none;
 }
+
+.submissions-section {
+  margin-top: 24px;
+}
+
+.submissions-empty {
+  color: var(--text-secondary, #777);
+  font-style: italic;
+}
+
+.submissions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.submission-card {
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 8px;
+  padding: 16px;
+  background: var(--bg-secondary, #fafafa);
+  transition: border-color 0.4s ease, background-color 0.4s ease;
+}
+
+.submission-card--new {
+  border-color: #00b894;
+  background: rgba(0, 184, 148, 0.12);
+}
+
+.submission-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.submission-card__source {
+  font-weight: 600;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.submission-card__time {
+  font-size: 0.75rem;
+  color: var(--text-secondary, #888);
+}
+
+.submission-card__image {
+  display: block;
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  margin: 8px 0;
+  border-radius: 4px;
+}
+
+.submission-card__fields {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 4px 12px;
+  margin: 0;
+}
+
+.submission-card__fields dt {
+  font-weight: 600;
+  color: var(--text-secondary, #666);
+  font-size: 0.85rem;
+}
+
+.submission-card__fields dd {
+  margin: 0;
+  word-break: break-word;
+}
