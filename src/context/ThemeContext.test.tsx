@@ -4,7 +4,7 @@ import { createElement } from 'react';
 import { ThemeProvider, useTheme } from './ThemeContext';
 
 const wrapper = ({ children }: { children: ReactNode }) =>
-  createElement(ThemeProvider, {}, children);
+  createElement(ThemeProvider, { children });
 
 describe('ThemeContext', () => {
   describe('useTheme hook', () => {

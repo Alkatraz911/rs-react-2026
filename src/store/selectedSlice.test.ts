@@ -50,7 +50,7 @@ describe('selectedSlice', () => {
     });
 
     it('should handle multiple pokemon', () => {
-      let state = { items: [] };
+      let state: ReturnType<typeof selectedReducer> = { items: [] };
       state = selectedReducer(state, toggleSelected(mockPokemon));
       state = selectedReducer(state, toggleSelected(mockPokemon2));
       expect(state.items).toHaveLength(2);
@@ -59,7 +59,7 @@ describe('selectedSlice', () => {
     });
 
     it('should toggle between add and remove', () => {
-      let state = { items: [] };
+      let state: ReturnType<typeof selectedReducer> = { items: [] };
       state = selectedReducer(state, toggleSelected(mockPokemon));
       expect(state.items).toHaveLength(1);
       state = selectedReducer(state, toggleSelected(mockPokemon));
@@ -85,7 +85,7 @@ describe('selectedSlice', () => {
 
   describe('combined operations', () => {
     it('should maintain state consistency', () => {
-      let state = { items: [] };
+      let state: ReturnType<typeof selectedReducer> = { items: [] };
 
       state = selectedReducer(state, toggleSelected(mockPokemon));
       expect(state.items).toHaveLength(1);

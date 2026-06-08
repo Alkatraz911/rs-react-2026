@@ -1,20 +1,9 @@
 import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { vi } from 'vitest';
 
 import Flyout from './Flyout';
 import { renderWithRouter } from '../../helpers/test.utils';
-import type { PokemonCardData } from '../../services/api';
 
 describe('Flyout component', () => {
-  const mockItem: PokemonCardData = {
-    id: 1,
-    name: 'pikachu',
-    image: null,
-    height: 4,
-    types: ['electric'],
-  };
-
   test('renders nothing when no items selected', () => {
     const { container } = renderWithRouter(<Flyout />);
     const flyout = container.querySelector('.flyout');

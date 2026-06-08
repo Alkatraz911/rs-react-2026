@@ -7,6 +7,7 @@ import HomePage from '../pages/HomePage/HomePage';
 import AboutPage from '../pages/AboutPage/AboutPage';
 import NotFoundPage from '../pages/NotFoundPage/NotFoundPage';
 import PokemonDetails from '../pages/PokemonDetails/PokemonDetails';
+import FormsPage from '../pages/FormsPage/FormsPage';
 
 function AppRouter() {
   return (
@@ -24,6 +25,11 @@ function AppRouter() {
       <Route
         path="/about"
         element={<AboutPage />}
+      />
+
+      <Route
+        path="/forms"
+        element={<FormsPage />}
       />
 
       <Route

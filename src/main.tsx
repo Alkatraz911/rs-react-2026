@@ -17,6 +17,8 @@ import './styles/notFoundPage.css';
 import './styles/aboutPage.css';
 import './styles/theme.css'
 import './styles/flyout.css'
+import './styles/modal.css'
+import './styles/forms.css'
 
 import App from './App.tsx'
 

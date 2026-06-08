@@ -30,6 +30,15 @@ function Navbar() {
         About
       </NavLink>
 
+      <NavLink
+        to="/forms"
+        className={({ isActive }) =>
+          isActive ? 'nav-link active' : 'nav-link'
+        }
+      >
+        Forms
+      </NavLink>
+
       <button
         className="theme-toggle"
         onClick={toggleTheme}
