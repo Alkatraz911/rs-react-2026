@@ -1,8 +1,15 @@
-import { useForm } from 'react-hook-form';
+import { useForm, Controller } from 'react-hook-form';
 import type {
   SubmissionData,
   Gender,
 } from '../../store/formsSlice';
+import { useAppSelector } from '../../store/hooks';
+import CountryAutocomplete from '../CountryAutocomplete/CountryAutocomplete';
+import PasswordStrength from '../PasswordStrength/PasswordStrength';
+import {
+  imageToBase64,
+  validateImageFile,
+} from '../../utils/imageToBase64';
 
 interface FormFields {
   name: string;
@@ -10,6 +17,10 @@ interface FormFields {
   email: string;
   gender: Gender;
   acceptedTerms: boolean;
+  password: string;
+  confirmPassword: string;
+  country: string;
+  image: FileList;
 }
 
 interface Props {
@@ -21,6 +32,8 @@ function HookForm({ onSubmit }: Props) {
     register,
     handleSubmit,
     reset,
+    control,
+    watch,
   } = useForm<FormFields>({
     defaultValues: {
       name: '',
@@ -28,19 +41,34 @@ function HookForm({ onSubmit }: Props) {
       email: '',
       gender: 'other',
       acceptedTerms: false,
+      password: '',
+      confirmPassword: '',
+      country: '',
     },
   });
 
-  const submit = (fields: FormFields) => {
+  const countries = useAppSelector(
+    (state) => state.forms.countries
+  );
+
+  const passwordValue = watch('password') ?? '';
+
+  const submit = async (fields: FormFields) => {
+    const file = fields.image?.[0] ?? null;
+    let base64Image = '';
+    if (file && validateImageFile(file).valid) {
+      base64Image = await imageToBase64(file);
+    }
+
     const data: SubmissionData = {
       name: fields.name,
       age: Number(fields.age),
       email: fields.email,
       gender: fields.gender,
       acceptedTerms: fields.acceptedTerms,
-      password: '',
-      country: '',
-      image: '',
+      password: fields.password,
+      country: fields.country,
+      image: base64Image,
     };
 
     onSubmit(data);
@@ -91,6 +119,54 @@ function HookForm({ onSubmit }: Props) {
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
+      </div>
+
+      <div className="rs-form__row">
+        <label htmlFor="rhf-country">Country</label>
+        <Controller
+          control={control}
+          name="country"
+          render={({ field }) => (
+            <CountryAutocomplete
+              id="rhf-country"
+              value={field.value}
+              onChange={field.onChange}
+              countries={countries}
+              placeholder="Start typing..."
+            />
+          )}
+        />
+      </div>
+
+      <div className="rs-form__row">
+        <label htmlFor="rhf-image">Profile picture (PNG / JPEG)</label>
+        <input
+          id="rhf-image"
+          type="file"
+          accept="image/png,image/jpeg"
+          {...register('image')}
+        />
+      </div>
+
+      <div className="rs-form__row">
+        <label htmlFor="rhf-password">Password</label>
+        <input
+          id="rhf-password"
+          type="password"
+          autoComplete="new-password"
+          {...register('password')}
+        />
+        <PasswordStrength password={passwordValue} />
+      </div>
+
+      <div className="rs-form__row">
+        <label htmlFor="rhf-confirm-password">Confirm password</label>
+        <input
+          id="rhf-confirm-password"
+          type="password"
+          autoComplete="new-password"
+          {...register('confirmPassword')}
+        />
       </div>
 
       <div className="rs-form__row rs-form__row--inline">

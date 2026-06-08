@@ -159,3 +159,119 @@
   opacity: 0.55;
   cursor: not-allowed;
 }
+
+.rs-form__error {
+  color: #d33;
+  font-size: 0.85rem;
+  min-height: 1.2em;
+  display: block;
+}
+
+.country-autocomplete {
+  position: relative;
+}
+
+.country-autocomplete input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 10px;
+  font-size: 0.95rem;
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  background: var(--bg-primary, #fff);
+  color: inherit;
+}
+
+.country-autocomplete__list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #ccc);
+  border-radius: 4px;
+  margin: 4px 0 0;
+  padding: 4px 0;
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+  z-index: 5;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.country-autocomplete__item {
+  padding: 6px 10px;
+  cursor: pointer;
+}
+
+.country-autocomplete__item:hover,
+.country-autocomplete__item[aria-selected="true"] {
+  background: rgba(0, 184, 148, 0.15);
+}
+
+.password-strength {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.password-strength__bar {
+  display: flex;
+  gap: 4px;
+}
+
+.password-strength__segment {
+  flex: 1;
+  height: 6px;
+  background: var(--border-color, #ddd);
+  border-radius: 2px;
+  transition: background-color 0.2s ease;
+}
+
+.password-strength__segment--filled {
+  background: #d33;
+}
+
+.password-strength__segment--level-2.password-strength__segment--filled {
+  background: #f0a020;
+}
+
+.password-strength__segment--level-3.password-strength__segment--filled {
+  background: #e6c200;
+}
+
+.password-strength__segment--level-4.password-strength__segment--filled {
+  background: #00b894;
+}
+
+.password-strength__meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+}
+
+.password-strength__label {
+  font-weight: 500;
+}
+
+.password-strength__criteria {
+  display: flex;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  flex-wrap: wrap;
+}
+
+.password-strength__rule {
+  color: var(--text-secondary, #888);
+}
+
+.password-strength__rule--met {
+  color: #00b894;
+  font-weight: 600;
+}
