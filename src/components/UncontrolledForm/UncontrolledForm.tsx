@@ -7,10 +7,12 @@ import type {
 import { useAppSelector } from '../../store/hooks';
 import CountryAutocomplete from '../CountryAutocomplete/CountryAutocomplete';
 import PasswordStrength from '../PasswordStrength/PasswordStrength';
+import { imageToBase64 } from '../../utils/imageToBase64';
 import {
-  imageToBase64,
-  validateImageFile,
-} from '../../utils/imageToBase64';
+  buildFormSchema,
+  zodIssuesToErrors,
+  type FormErrors,
+} from '../../utils/validation';
 
 interface Props {
   onSubmit: (data: SubmissionData) => void;
@@ -29,47 +31,57 @@ function UncontrolledForm({ onSubmit }: Props) {
 
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
-  const [imageError, setImageError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<FormErrors>({});
 
   const countries = useAppSelector(
     (state) => state.forms.countries
   );
 
-  const handleImageChange = () => {
-    const file = imageRef.current?.files?.[0] ?? null;
-    if (!file) {
-      setImageError(null);
-      return;
-    }
-    const result = validateImageFile(file);
-    setImageError(result.valid ? null : result.error);
-  };
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const file = imageRef.current?.files?.[0] ?? null;
-    let base64Image = '';
-    if (file && validateImageFile(file).valid) {
-      base64Image = await imageToBase64(file);
-    }
 
-    const data: SubmissionData = {
+    const raw = {
       name: nameRef.current?.value ?? '',
-      age: Number(ageRef.current?.value ?? 0),
+      age: ageRef.current?.value ?? '',
       email: emailRef.current?.value ?? '',
       gender: (genderRef.current?.value as Gender) ?? 'other',
       acceptedTerms: termsRef.current?.checked ?? false,
       password: passwordRef.current?.value ?? '',
+      confirmPassword: confirmPasswordRef.current?.value ?? '',
       country,
+      image: file,
+    };
+
+    const schema = buildFormSchema(countries);
+    const result = schema.safeParse(raw);
+
+    if (!result.success) {
+      setErrors(zodIssuesToErrors(result.error.issues));
+      return;
+    }
+
+    setErrors({});
+
+    const validated = result.data;
+    const base64Image = await imageToBase64(validated.image);
+
+    const submission: SubmissionData = {
+      name: validated.name,
+      age: validated.age,
+      email: validated.email,
+      gender: validated.gender,
+      acceptedTerms: validated.acceptedTerms,
+      password: validated.password,
+      country: validated.country,
       image: base64Image,
     };
 
-    onSubmit(data);
+    onSubmit(submission);
     formRef.current?.reset();
     setPassword('');
     setCountry('');
-    setImageError(null);
   };
 
   return (
@@ -88,7 +100,11 @@ function UncontrolledForm({ onSubmit }: Props) {
           type="text"
           ref={nameRef}
           autoComplete="name"
+          aria-invalid={Boolean(errors.name)}
         />
+        <span className="rs-form__error" role="alert">
+          {errors.name ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -99,7 +115,11 @@ function UncontrolledForm({ onSubmit }: Props) {
           type="number"
           ref={ageRef}
           min={0}
+          aria-invalid={Boolean(errors.age)}
         />
+        <span className="rs-form__error" role="alert">
+          {errors.age ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -110,7 +130,11 @@ function UncontrolledForm({ onSubmit }: Props) {
           type="email"
           ref={emailRef}
           autoComplete="email"
+          aria-invalid={Boolean(errors.email)}
         />
+        <span className="rs-form__error" role="alert">
+          {errors.email ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -120,11 +144,15 @@ function UncontrolledForm({ onSubmit }: Props) {
           name="gender"
           ref={genderRef}
           defaultValue="other"
+          aria-invalid={Boolean(errors.gender)}
         >
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
+        <span className="rs-form__error" role="alert">
+          {errors.gender ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -137,6 +165,9 @@ function UncontrolledForm({ onSubmit }: Props) {
           countries={countries}
           placeholder="Start typing..."
         />
+        <span className="rs-form__error" role="alert">
+          {errors.country ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -147,13 +178,11 @@ function UncontrolledForm({ onSubmit }: Props) {
           type="file"
           accept="image/png,image/jpeg"
           ref={imageRef}
-          onChange={handleImageChange}
+          aria-invalid={Boolean(errors.image)}
         />
-        {imageError && (
-          <span className="rs-form__error" role="alert">
-            {imageError}
-          </span>
-        )}
+        <span className="rs-form__error" role="alert">
+          {errors.image ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -165,8 +194,12 @@ function UncontrolledForm({ onSubmit }: Props) {
           ref={passwordRef}
           onChange={(event) => setPassword(event.target.value)}
           autoComplete="new-password"
+          aria-invalid={Boolean(errors.password)}
         />
         <PasswordStrength password={password} />
+        <span className="rs-form__error" role="alert">
+          {errors.password ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -177,7 +210,11 @@ function UncontrolledForm({ onSubmit }: Props) {
           type="password"
           ref={confirmPasswordRef}
           autoComplete="new-password"
+          aria-invalid={Boolean(errors.confirmPassword)}
         />
+        <span className="rs-form__error" role="alert">
+          {errors.confirmPassword ?? ''}
+        </span>
       </div>
 
       <div className="rs-form__row rs-form__row--inline">
@@ -186,11 +223,15 @@ function UncontrolledForm({ onSubmit }: Props) {
           name="acceptedTerms"
           type="checkbox"
           ref={termsRef}
+          aria-invalid={Boolean(errors.acceptedTerms)}
         />
         <label htmlFor="uc-terms">
           I accept the Terms and Conditions
         </label>
       </div>
+      <span className="rs-form__error" role="alert">
+        {errors.acceptedTerms ?? ''}
+      </span>
 
       <button type="submit" className="rs-form__submit">
         Submit

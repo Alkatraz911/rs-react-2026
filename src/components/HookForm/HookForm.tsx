@@ -1,4 +1,7 @@
+import { useEffect, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import type { Resolver } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
 import type {
   SubmissionData,
   Gender,
@@ -6,21 +9,19 @@ import type {
 import { useAppSelector } from '../../store/hooks';
 import CountryAutocomplete from '../CountryAutocomplete/CountryAutocomplete';
 import PasswordStrength from '../PasswordStrength/PasswordStrength';
-import {
-  imageToBase64,
-  validateImageFile,
-} from '../../utils/imageToBase64';
+import { imageToBase64 } from '../../utils/imageToBase64';
+import { buildFormSchema } from '../../utils/validation';
 
 interface FormFields {
   name: string;
-  age: number;
+  age: number | string;
   email: string;
   gender: Gender;
   acceptedTerms: boolean;
   password: string;
   confirmPassword: string;
   country: string;
-  image: FileList;
+  image: FileList | null;
 }
 
 interface Props {
@@ -28,37 +29,54 @@ interface Props {
 }
 
 function HookForm({ onSubmit }: Props) {
+  const countries = useAppSelector(
+    (state) => state.forms.countries
+  );
+
+  const schema = useMemo(
+    () => buildFormSchema(countries),
+    [countries]
+  );
+
   const {
     register,
     handleSubmit,
     reset,
     control,
     watch,
+    trigger,
+    formState: { errors, isValid, touchedFields, dirtyFields },
   } = useForm<FormFields>({
+    resolver: zodResolver(schema) as unknown as Resolver<FormFields>,
+    mode: 'onChange',
     defaultValues: {
       name: '',
-      age: 0,
+      age: '',
       email: '',
       gender: 'other',
       acceptedTerms: false,
       password: '',
       confirmPassword: '',
       country: '',
+      image: null,
     },
   });
 
-  const countries = useAppSelector(
-    (state) => state.forms.countries
-  );
+  useEffect(() => {
+    void trigger();
+  }, [trigger]);
 
   const passwordValue = watch('password') ?? '';
 
+  const errorFor = (field: keyof FormFields): string => {
+    if (!touchedFields[field] && !dirtyFields[field]) return '';
+    return errors[field]?.message ?? '';
+  };
+
   const submit = async (fields: FormFields) => {
-    const file = fields.image?.[0] ?? null;
-    let base64Image = '';
-    if (file && validateImageFile(file).valid) {
-      base64Image = await imageToBase64(file);
-    }
+    const fileList = fields.image;
+    const file = fileList && fileList.length > 0 ? fileList[0] : null;
+    const base64Image = file ? await imageToBase64(file) : '';
 
     const data: SubmissionData = {
       name: fields.name,
@@ -88,8 +106,12 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-name"
           type="text"
           autoComplete="name"
+          aria-invalid={Boolean(errors.name)}
           {...register('name')}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('name')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -98,8 +120,12 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-age"
           type="number"
           min={0}
-          {...register('age', { valueAsNumber: true })}
+          aria-invalid={Boolean(errors.age)}
+          {...register('age')}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('age')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -108,17 +134,28 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-email"
           type="email"
           autoComplete="email"
+          aria-invalid={Boolean(errors.email)}
           {...register('email')}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('email')}
+        </span>
       </div>
 
       <div className="rs-form__row">
         <label htmlFor="rhf-gender">Gender</label>
-        <select id="rhf-gender" {...register('gender')}>
+        <select
+          id="rhf-gender"
+          aria-invalid={Boolean(errors.gender)}
+          {...register('gender')}
+        >
           <option value="male">Male</option>
           <option value="female">Female</option>
           <option value="other">Other</option>
         </select>
+        <span className="rs-form__error" role="alert">
+          {errorFor('gender')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -136,6 +173,9 @@ function HookForm({ onSubmit }: Props) {
             />
           )}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('country')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -144,8 +184,12 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-image"
           type="file"
           accept="image/png,image/jpeg"
+          aria-invalid={Boolean(errors.image)}
           {...register('image')}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('image')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -154,9 +198,13 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-password"
           type="password"
           autoComplete="new-password"
+          aria-invalid={Boolean(errors.password)}
           {...register('password')}
         />
         <PasswordStrength password={passwordValue} />
+        <span className="rs-form__error" role="alert">
+          {errorFor('password')}
+        </span>
       </div>
 
       <div className="rs-form__row">
@@ -165,22 +213,34 @@ function HookForm({ onSubmit }: Props) {
           id="rhf-confirm-password"
           type="password"
           autoComplete="new-password"
+          aria-invalid={Boolean(errors.confirmPassword)}
           {...register('confirmPassword')}
         />
+        <span className="rs-form__error" role="alert">
+          {errorFor('confirmPassword')}
+        </span>
       </div>
 
       <div className="rs-form__row rs-form__row--inline">
         <input
           id="rhf-terms"
           type="checkbox"
+          aria-invalid={Boolean(errors.acceptedTerms)}
           {...register('acceptedTerms')}
         />
         <label htmlFor="rhf-terms">
           I accept the Terms and Conditions
         </label>
       </div>
+      <span className="rs-form__error" role="alert">
+        {errorFor('acceptedTerms')}
+      </span>
 
-      <button type="submit" className="rs-form__submit">
+      <button
+        type="submit"
+        className="rs-form__submit"
+        disabled={!isValid}
+      >
         Submit
       </button>
     </form>
