@@ -144,8 +144,7 @@ describe('Flyout component - Enhanced Tests', () => {
       expect(region).toBeInTheDocument();
     });
 
-    test('buttons are accessible', async () => {
-      const user = userEvent.setup();
+    test('buttons are accessible', () => {
       store.dispatch(toggleSelected(mockPokemon));
       renderWithRouter(<Flyout />);
 
