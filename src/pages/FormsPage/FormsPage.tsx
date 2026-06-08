@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Modal from '../../components/Modal/Modal';
 import SubmissionCard from '../../components/SubmissionCard/SubmissionCard';
 import UncontrolledForm from '../../components/UncontrolledForm/UncontrolledForm';
@@ -6,9 +6,12 @@ import HookForm from '../../components/HookForm/HookForm';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
   addSubmission,
+  clearLastSubmission,
   type FormSource,
   type SubmissionData,
 } from '../../store/formsSlice';
+
+const HIGHLIGHT_DURATION_MS = 3000;
 
 function FormsPage() {
   const [openVariant, setOpenVariant] =
@@ -21,6 +24,16 @@ function FormsPage() {
   const lastSubmissionId = useAppSelector(
     (state) => state.forms.lastSubmissionId
   );
+
+  useEffect(() => {
+    if (!lastSubmissionId) return;
+    const timer = window.setTimeout(() => {
+      dispatch(clearLastSubmission());
+    }, HIGHLIGHT_DURATION_MS);
+    return () => {
+      window.clearTimeout(timer);
+    };
+  }, [lastSubmissionId, dispatch]);
 
   const handleClose = () => setOpenVariant(null);
 
