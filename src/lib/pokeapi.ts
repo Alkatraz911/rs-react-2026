@@ -2,7 +2,7 @@ import type { PokemonCardData } from '@/services/api';
 
 const BASE_URL = 'https://pokeapi.co/api/v2';
 
-export const PAGE_SIZE = 21;
+export const PAGE_SIZE = 20;
 
 // Upper bound used for client-side style name filtering during search.
 const SEARCH_POOL_SIZE = 1000;
