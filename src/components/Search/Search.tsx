@@ -1,77 +1,32 @@
-import { useState } from 'react';
+import { getTranslations } from 'next-intl/server';
+import { searchAction, clearAction } from '@/app/[locale]/actions';
 
-import { useSearchParams } from 'react-router-dom';
+type SearchProps = {
+  initialQuery: string;
+};
 
-import { useLocalStorage } from '../../hooks/useLocalStorage';
-
-function Search() {
-  const [searchParams, setSearchParams] =
-    useSearchParams();
-
-  const query =
-    searchParams.get('query') || '';
-
-  const [savedSearch, setSavedSearch] =
-    useLocalStorage(
-      'search',
-      query
-    );
-
-  const [value, setValue] =
-    useState(() => savedSearch);
-
-  const handleSubmit = () => {
-    const trimmed = value.trim();
-
-    setSavedSearch(trimmed);
-
-    const params = new URLSearchParams(
-      searchParams
-    );
-
-    if (trimmed) {
-      params.set('query', trimmed);
-    } else {
-      params.delete('query');
-    }
-
-    params.set('page', '1');
-
-    setSearchParams(params);
-  };
-
-  const handleClearSearch = () => {
-    setValue('');
-    setSavedSearch('');
-    setSearchParams('');
-  };
+async function Search({ initialQuery }: SearchProps) {
+  const t = await getTranslations('Search');
 
   return (
-    <div className="search">
+    <form className="search" action={searchAction}>
       <input
-        value={value}
-        onChange={(e) =>
-          setValue(e.target.value)
-        }
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            handleSubmit();
-          }
-        }}
-        placeholder="Search pokemon..."
+        name="query"
+        defaultValue={initialQuery}
+        placeholder={t('placeholder')}
       />
 
       <button
+        type="submit"
         className="clear-search"
-        onClick={handleClearSearch}
+        formAction={clearAction}
+        aria-label={t('clear')}
       >
         X
       </button>
 
-      <button onClick={handleSubmit}>
-        Search
-      </button>
-    </div>
+      <button type="submit">{t('search')}</button>
+    </form>
   );
 }
 

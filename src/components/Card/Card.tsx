@@ -1,76 +1,63 @@
-import type { PokemonCardData } from '../../services/api';
-import { useNavigate, useSearchParams } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { toggleSelected } from '../../store/selectedSlice';
+'use client';
 
-interface Props {
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { toggleSelected } from '@/store/selectedSlice';
+import type { PokemonCardData } from '@/services/api';
+
+type CardProps = {
   item: PokemonCardData;
-}
+  query: string;
+  page: number;
+};
 
-function Card({ item }: Props) {
-  const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+function Card({ item, query, page }: CardProps) {
+  const t = useTranslations('Card');
   const dispatch = useAppDispatch();
 
   const isSelected = useAppSelector((state) =>
     state.selected.items.some((i) => i.id === item.id)
   );
 
-  const handleOpenDetails = () => {
-    navigate({
-      pathname: `/pokemon/${item.id}`,
-      search: searchParams.toString(),
-    });
-  };
-
-  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-    dispatch(toggleSelected(item));
+  const detailsHref = {
+    pathname: '/' as const,
+    query: {
+      ...(query ? { query } : {}),
+      page: String(page),
+      details: String(item.id),
+    },
   };
 
   return (
-    <div
-      className={`card${isSelected ? ' card--selected' : ''}`}
-      onClick={handleOpenDetails}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          handleOpenDetails();
-        }
-      }}
-    >
-      <label
-        className="card-checkbox"
-        onClick={(e) => e.stopPropagation()}
-      >
+    <div className={`card${isSelected ? ' card--selected' : ''}`}>
+      <label className="card-checkbox">
         <input
           type="checkbox"
           checked={isSelected}
-          onChange={handleCheckboxChange}
-          aria-label={`Select ${item.name}`}
+          onChange={() => dispatch(toggleSelected(item))}
+          aria-label={t('select', { name: item.name })}
         />
       </label>
 
-      <img
-        src={item.image ?? undefined}
-        alt={item.name}
-      />
+      <Link href={detailsHref} className="card-link">
+        {item.image && (
+          <Image src={item.image} alt={item.name} width={120} height={120} />
+        )}
 
-      <h3>{item.name}</h3>
+        <h3>{item.name}</h3>
 
-      <p>Height: {item.height}</p>
+        <p>{t('height', { height: item.height })}</p>
 
-      <div className="types">
-        {item.types.map((type) => (
-          <span
-            key={type}
-            className="type"
-          >
-            {type}
-          </span>
-        ))}
-      </div>
+        <div className="types">
+          {item.types.map((type) => (
+            <span key={type} className="type">
+              {type}
+            </span>
+          ))}
+        </div>
+      </Link>
     </div>
   );
 }

@@ -41,11 +41,17 @@
   position: absolute;
   top: 12px;
   left: 12px;
-  z-index: 1;
+  z-index: 2;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.card-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
 }
 
 .card-checkbox input[type='checkbox'] {
@@ -119,4 +125,18 @@
   padding: 10px 16px;
   border-radius: 12px;
   cursor: pointer;
+  text-decoration: none;
+}
+
+.results-empty {
+  color: #94a3b8;
+  text-align: center;
+  padding: 40px 0;
+}
+
+.details-empty {
+  margin: auto;
+  color: #94a3b8;
+  text-align: center;
+  font-size: 15px;
 }
