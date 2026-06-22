@@ -1,0 +1,64 @@
+{
+  "Metadata": {
+    "title": "Pokemon Explorer",
+    "description": "Browse and search Pokemon"
+  },
+  "Navbar": {
+    "home": "Home",
+    "about": "About",
+    "lightMode": "Light Mode",
+    "darkMode": "Dark Mode",
+    "testError": "Test Error Boundary"
+  },
+  "LanguageSwitcher": {
+    "label": "Language",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "Search": {
+    "placeholder": "Search pokemon...",
+    "search": "Search",
+    "clear": "Clear search"
+  },
+  "Home": {
+    "refresh": "Refresh",
+    "tryAgain": "Try Again",
+    "empty": "No pokemon found",
+    "selectHint": "Select a pokemon to see details"
+  },
+  "Pagination": {
+    "prev": "Prev",
+    "next": "Next"
+  },
+  "Card": {
+    "height": "Height: {height}",
+    "select": "Select {name}"
+  },
+  "Details": {
+    "close": "Close",
+    "refresh": "Refresh",
+    "height": "Height: {height}",
+    "notFound": "Pokemon not found"
+  },
+  "Flyout": {
+    "selected": "{count, plural, one {# item selected} other {# items selected}}",
+    "unselectAll": "Unselect all",
+    "download": "Download"
+  },
+  "About": {
+    "title": "About Application",
+    "description": "Pokemon Explorer built with React, TypeScript and Next.js using the App Router.",
+    "author": "Author: Alkatraz911",
+    "courseLink": "RS School React Course"
+  },
+  "NotFound": {
+    "title": "404",
+    "message": "Page not found",
+    "backHome": "Return to Home"
+  },
+  "Error": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred in the application. Try reloading the page or check your connection.",
+    "tryAgain": "Try again"
+  }
+}
