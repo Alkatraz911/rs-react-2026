@@ -41,6 +41,7 @@
     "notFound": "Pokemon not found"
   },
   "Flyout": {
+    "region": "Selected items",
     "selected": "{count, plural, one {# item selected} other {# items selected}}",
     "unselectAll": "Unselect all",
     "download": "Download"

@@ -5,6 +5,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { Providers } from '../providers';
 import Navbar from '@/components/Navbar/Navbar';
+import Flyout from '@/components/Flyout/Flyout';
 
 import '@/styles/main.css';
 import '@/styles/layout.css';
@@ -64,6 +65,7 @@ export default async function LocaleLayout({ children, params }: LayoutProps) {
             <div className="app">
               <Navbar />
               {children}
+              <Flyout />
             </div>
           </Providers>
         </NextIntlClientProvider>
