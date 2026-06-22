@@ -1,48 +1,46 @@
+'use client';
+
 import { useState } from 'react';
-import { NavLink } from 'react-router-dom';
-import { useTheme } from '../../context/ThemeContext';
+import { useTranslations } from 'next-intl';
+import { Link, usePathname } from '@/i18n/navigation';
+import { useTheme } from '@/context/ThemeContext';
+import LanguageSwitcher from '@/components/LanguageSwitcher/LanguageSwitcher';
 
 function Navbar() {
-  const [shouldThrow, setShouldThrow] = useState(false);
+  const t = useTranslations('Navbar');
+  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
+  const [shouldThrow, setShouldThrow] = useState(false);
 
   if (shouldThrow) {
     throw new Error('Test Error Boundary');
   }
 
+  const linkClassName = (href: string) =>
+    pathname === href ? 'nav-link active' : 'nav-link';
+
   return (
     <nav className="navbar">
-      <NavLink
-        to="/"
-        className={({ isActive }) =>
-          isActive ? 'nav-link active' : 'nav-link'
-        }
-      >
-        Home
-      </NavLink>
+      <Link href="/" className={linkClassName('/')}>
+        {t('home')}
+      </Link>
 
-      <NavLink
-        to="/about"
-        className={({ isActive }) =>
-          isActive ? 'nav-link active' : 'nav-link'
-        }
-      >
-        About
-      </NavLink>
+      <Link href="/about" className={linkClassName('/about')}>
+        {t('about')}
+      </Link>
+
+      <LanguageSwitcher />
 
       <button
         className="theme-toggle"
         onClick={toggleTheme}
-        aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} theme`}
+        aria-label={theme === 'dark' ? t('lightMode') : t('darkMode')}
       >
-        {theme === 'dark' ? 'Light Mode' : 'Dark Mode'}
+        {theme === 'dark' ? t('lightMode') : t('darkMode')}
       </button>
 
-      <button
-        className="error-btn"
-        onClick={() => setShouldThrow(true)}
-      >
-        Test Error Boundary
+      <button className="error-btn" onClick={() => setShouldThrow(true)}>
+        {t('testError')}
       </button>
     </nav>
   );

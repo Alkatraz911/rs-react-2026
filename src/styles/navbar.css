@@ -74,6 +74,34 @@
     0 0 12px rgba(34, 245, 213, 0.8);
 }
 
+.language-switcher {
+  padding: 9px 14px;
+
+  border: 1px solid rgba(0, 255, 200, 0.25);
+  border-radius: 12px;
+
+  background: rgba(2, 6, 23, 0.85);
+
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    border-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.language-switcher:hover {
+  border-color: rgba(34, 245, 213, 0.5);
+  transform: translateY(-1px);
+}
+
+.language-switcher option {
+  color: #0f172a;
+}
+
 .error-btn {
   padding: 10px 16px;
 
