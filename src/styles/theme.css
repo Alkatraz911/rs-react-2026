@@ -153,6 +153,28 @@ body {
   background: rgba(13, 148, 136, 0.16);
 }
 
+/* Language switcher theme */
+[data-theme='light'] .language-switcher {
+  border-color: rgba(13, 148, 136, 0.35);
+  background-color: rgba(13, 148, 136, 0.08);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%230d9488' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  color: #0d9488;
+}
+
+[data-theme='light'] .language-switcher:hover {
+  background-color: rgba(13, 148, 136, 0.16);
+}
+
+[data-theme='light'] .language-switcher:focus-visible {
+  border-color: rgba(13, 148, 136, 0.6);
+  box-shadow: 0 0 0 4px rgba(13, 148, 136, 0.12);
+}
+
+[data-theme='light'] .language-switcher option {
+  background-color: #ffffff;
+  color: #0f172a;
+}
+
 /* Search theme */
 [data-theme='light'] .search input {
   background: rgba(255, 255, 255, 0.9);

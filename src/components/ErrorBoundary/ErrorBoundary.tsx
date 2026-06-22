@@ -1,49 +1,37 @@
+'use client';
+
 import { Component } from 'react';
 import type { ReactNode } from 'react';
+import ErrorFallback from '@/components/ErrorFallback/ErrorFallback';
 
-interface Props {
-    children: ReactNode;
-}
+type Props = {
+  children: ReactNode;
+};
 
-interface State {
-    hasError: boolean;
-}
+type State = {
+  hasError: boolean;
+};
 
+// Catches client-side render errors anywhere in the app shell (including the
+// navbar, which lives in the layout and is therefore outside `error.tsx`).
 class ErrorBoundary extends Component<Props, State> {
-    state: State = { hasError: false };
+  state: State = { hasError: false };
 
-    static getDerivedStateFromError() {
-        return { hasError: true };
+  static getDerivedStateFromError(): State {
+    return { hasError: true };
+  }
+
+  handleReset = () => {
+    this.setState({ hasError: false });
+  };
+
+  render() {
+    if (this.state.hasError) {
+      return <ErrorFallback onReset={this.handleReset} />;
     }
 
-    componentDidCatch(error: Error) {
-        console.error('ErrorBoundary caught:', error);
-    }
-
-    handleReset = () => {
-        this.setState({ hasError: false });
-    };
-
-    render() {
-        if (this.state.hasError) {
-            return (
-                <div className="error">
-                    <h2>Something went wrong</h2>
-
-                    <p>
-                        An unexpected error occurred in the application.
-                        Try reloading the page or check your connection.
-                    </p>
-
-                    <button onClick={this.handleReset}>
-                        Try again
-                    </button>
-                </div>
-            );
-        }
-
-        return this.props.children;
-    }
+    return this.props.children;
+  }
 }
 
 export default ErrorBoundary;

@@ -1,0 +1,65 @@
+{
+  "Metadata": {
+    "title": "Pokemon Explorer",
+    "description": "Просмотр и поиск покемонов"
+  },
+  "Navbar": {
+    "home": "Главная",
+    "about": "О приложении",
+    "lightMode": "Светлая тема",
+    "darkMode": "Тёмная тема",
+    "testError": "Проверить Error Boundary"
+  },
+  "LanguageSwitcher": {
+    "label": "Язык",
+    "en": "English",
+    "ru": "Русский"
+  },
+  "Search": {
+    "placeholder": "Поиск покемонов...",
+    "search": "Найти",
+    "clear": "Очистить поиск"
+  },
+  "Home": {
+    "refresh": "Обновить",
+    "tryAgain": "Попробовать снова",
+    "empty": "Покемоны не найдены",
+    "selectHint": "Выберите покемона, чтобы увидеть детали"
+  },
+  "Pagination": {
+    "prev": "Назад",
+    "next": "Вперёд"
+  },
+  "Card": {
+    "height": "Рост: {height}",
+    "select": "Выбрать {name}"
+  },
+  "Details": {
+    "close": "Закрыть",
+    "refresh": "Обновить",
+    "height": "Рост: {height}",
+    "notFound": "Покемон не найден"
+  },
+  "Flyout": {
+    "region": "Выбранные элементы",
+    "selected": "{count, plural, one {# элемент выбран} few {# элемента выбрано} many {# элементов выбрано} other {# элемента выбрано}}",
+    "unselectAll": "Снять выделение",
+    "download": "Скачать"
+  },
+  "About": {
+    "title": "О приложении",
+    "description": "Pokemon Explorer, созданный с помощью React, TypeScript и Next.js на базе App Router.",
+    "author": "Автор: Alkatraz911",
+    "courseLink": "Курс RS School React"
+  },
+  "NotFound": {
+    "title": "404",
+    "message": "Страница не найдена",
+    "backHome": "Вернуться на главную"
+  },
+  "Error": {
+    "title": "Что-то пошло не так",
+    "message": "В приложении произошла непредвиденная ошибка. Попробуйте перезагрузить страницу или проверьте соединение.",
+    "tryAgain": "Попробовать снова"
+  }
+}

@@ -7,7 +7,13 @@
   margin-top: 36px;
 }
 
-.pagination button {
+.pagination button,
+.pagination .pagination-btn,
+.pagination .page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   min-width: 42px;
   height: 42px;
 
@@ -22,6 +28,8 @@
 
   font-weight: 700;
 
+  text-decoration: none;
+
   cursor: pointer;
 
   transition:
@@ -30,11 +38,18 @@
     color 0.25s ease;
 }
 
-.pagination button:hover {
+.pagination button:hover,
+.pagination .pagination-btn:hover,
+.pagination .page:hover {
   transform: translateY(-2px);
 
   background:
     rgba(30, 41, 59, 1);
+}
+
+.pagination .disabled {
+  opacity: 0.45;
+  pointer-events: none;
 }
 
 .pagination .active {

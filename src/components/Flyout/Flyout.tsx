@@ -1,23 +1,11 @@
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { unselectAll } from '../../store/selectedSlice';
+'use client';
 
-function downloadCSV(items: { id: number; name: string; image: string | null; height: number; types: string[] }[]) {
-  const header = 'id,name,height,types,details_url';
-  const rows = items.map((item) => {
-    const detailsUrl = `${window.location.origin}/pokemon/${item.id}`;
-    return `${item.id},${item.name},${item.height},"${item.types.join('|')}",${detailsUrl}`;
-  });
-  const csv = [header, ...rows].join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${items.length}_items.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
+import { useTranslations } from 'next-intl';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { unselectAll } from '@/store/selectedSlice';
 
 function Flyout() {
+  const t = useTranslations('Flyout');
   const dispatch = useAppDispatch();
   const selectedItems = useAppSelector((state) => state.selected.items);
 
@@ -25,10 +13,13 @@ function Flyout() {
     return null;
   }
 
+  const ids = selectedItems.map((item) => item.id).join(',');
+  const downloadHref = `/api/csv?ids=${ids}`;
+
   return (
-    <div className="flyout" role="region" aria-label="Selected items">
+    <div className="flyout" role="region" aria-label={t('region')}>
       <span className="flyout-count">
-        {selectedItems.length} item{selectedItems.length !== 1 ? 's' : ''} selected
+        {t('selected', { count: selectedItems.length })}
       </span>
 
       <div className="flyout-actions">
@@ -36,15 +27,16 @@ function Flyout() {
           className="flyout-btn flyout-btn--unselect"
           onClick={() => dispatch(unselectAll())}
         >
-          Unselect all
+          {t('unselectAll')}
         </button>
 
-        <button
+        <a
           className="flyout-btn flyout-btn--download"
-          onClick={() => downloadCSV(selectedItems)}
+          href={downloadHref}
+          download={`${selectedItems.length}_items.csv`}
         >
-          Download
-        </button>
+          {t('download')}
+        </a>
       </div>
     </div>
   );
