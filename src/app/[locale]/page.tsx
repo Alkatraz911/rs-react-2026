@@ -16,6 +16,12 @@ type PageProps = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 };
 
+// The search results page is driven entirely by `searchParams` (query, page,
+// details), so it must be rendered dynamically on each request. Without this it
+// is prerendered as static HTML and client-side navigations that only change
+// search params (e.g. opening the details panel) reuse the cached static RSC.
+export const dynamic = 'force-dynamic';
+
 function firstParam(value: string | string[] | undefined): string {
   return Array.isArray(value) ? (value[0] ?? '') : (value ?? '');
 }
@@ -61,7 +67,7 @@ export default async function HomePage({ params, searchParams }: PageProps) {
 
       <div className="right-panel">
         {detailsId ? (
-          <Suspense fallback={<Loader />}>
+          <Suspense key={detailsId} fallback={<Loader />}>
             <PokemonDetailsPanel id={detailsId} query={query} page={page} />
           </Suspense>
         ) : (
